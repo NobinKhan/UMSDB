@@ -4,6 +4,10 @@ from app.academics.models import Department, Program
 # Create your models here.
 
 class Student(models.Model):
+    gender = (
+        ("Male", "Male"), ("Female", "Female"), ("3rd Gender", "3rd Gender"),
+    )
+
     student_id = models.PositiveBigIntegerField(null=True)
     name = models.CharField(max_length=100, null=True)
     department = models.ForeignKey(Department, on_delete=models.CASCADE, null=True)
@@ -11,6 +15,7 @@ class Student(models.Model):
     # cgpa = models
     email = models.EmailField(max_length=100, null=True)
     phone = models.IntegerField(max_length=14, null=True)
+    gender = models.CharField(max_length=10, choices=gender, null=True)
     date_of_birth = models.DateTimeField(null=True)
     blood_group = models.CharField(max_length=3, null=True)
     guardian_name = models.CharField(max_length=100, null=True)
