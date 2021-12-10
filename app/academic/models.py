@@ -29,4 +29,3 @@ class Batch(models.Model):
     batch_number = models.PositiveBigIntegerField(null=True)
     created_at = models.DateTimeField('date time created at', auto_now_add=True, null=True)
     updated_at = models.DateTimeField('date time updated at', auto_now=True, null=True)
-
