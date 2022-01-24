@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "UniversityManagementSystem"
+version = "0.1.0"
+description = "University Management System Graphql Api"
+authors = ["NobinKhan <nobin118960@gmail.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+Django = "^4.0.1"
+graphene-django = "^3.0.0b7"
+django-countries = "^7.2.1"
+Pillow = "^9.0.0"
+
+[tool.poetry.dev-dependencies]
+autopep8 = "^1.6.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
