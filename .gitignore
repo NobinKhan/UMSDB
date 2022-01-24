@@ -1,0 +1,6 @@
+academic/__pycache__
+academic/migrations
+core/__pycache__
+core/migrations
+settings/__pycache__
+

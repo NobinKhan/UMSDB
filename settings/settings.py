@@ -38,8 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_countries',
+    'graphene_django',
     'core',
-    # 'user.apps.UserConfig',
 ]
 
 MIDDLEWARE = [
@@ -128,6 +128,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Custom Settings
 AUTH_USER_MODEL = 'core.User'
 
-# GRAPHENE = {
-#     "SCHEMA": "user.schema.schema"
-# }
+GRAPHENE = {
+    "SCHEMA": "core.schema.schema"
+}
