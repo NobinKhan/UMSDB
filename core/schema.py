@@ -1,8 +1,15 @@
 import graphene
+from django.db import models
 from graphene.types import schema
 from graphene_django import DjangoObjectType
 from .models import User as UserModel
 from django.contrib.auth.models import Group
+from graphene_django.converter import convert_django_field
+
+
+@convert_django_field.register(models.PositiveBigIntegerField)
+def convert_bigint_to_float(field, registry=None):
+    return graphene.Float(description=field.help_text, required=not field.null)
 
 
 class User(DjangoObjectType):
