@@ -26,7 +26,7 @@ class UserAdminConfig(UserAdmin):
         ('Personal Info', {
             'classes': ('collapse',),
             'fields': (('first_name', 'last_name'),
-                       'date_of_birth', 'permanentAddress', 'presentAddress',
+                       'date_of_birth', 'gender', 'permanentAddress', 'presentAddress',
                        'mobilePhone', 'mobilePhone2', 'nid', 'birthCertNumber',
                        'nationality', 'fatherName', 'motherName', 'photo'
                        )
@@ -56,7 +56,7 @@ class UserAdminConfig(UserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'username', 'first_name', 'last_name', 'date_of_birth', 'permanentAddress', 'presentAddress',
+            'fields': ('email', 'username', 'first_name', 'last_name', 'date_of_birth', 'gender', 'permanentAddress', 'presentAddress',
                        'mobilePhone', 'mobilePhone2', 'nid', 'birthCertNumber',
                        'nationality', 'fatherName', 'motherName', 'photo', 'password1', 'password2'
                        ),

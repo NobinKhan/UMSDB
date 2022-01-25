@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'django_countries',
     'graphene_django',
     'core',
+    'academic',
+    # 'student',
 ]
 
 MIDDLEWARE = [

@@ -2,5 +2,7 @@ academic/__pycache__
 academic/migrations
 core/__pycache__
 core/migrations
+student/__pycache__
+student/migrations
 settings/__pycache__
 

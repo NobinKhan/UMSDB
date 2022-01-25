@@ -91,6 +91,11 @@ class User(AbstractBaseUser, PermissionsMixin):
         ('ug', 'Uganda'),
         ('cn', 'chaina'),
     ]
+    genderChoices = [
+        ('m', 'Male'),
+        ('n', 'Female'),
+        ('o', 'Other'),
+    ]
 
     username = models.CharField(
         _('username'),
@@ -109,6 +114,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(_('last name'), max_length=150, blank=True)
     email = models.EmailField(_('email address'), unique=True)
     date_of_birth = models.DateField(verbose_name=_("Date of birth"))
+    gender = models.CharField(
+        max_length=2,
+        choices=genderChoices,
+        default='m',
+    )
     permanentAddress = models.CharField(verbose_name=_(
         "Parmanent Address"), max_length=1024, null=True)
     presentAddress = models.CharField(verbose_name=_(
