@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'graphene_django',
     'core',
     'academic',
-    # 'student',
+    'student',
 ]
 
 MIDDLEWARE = [
