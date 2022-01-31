@@ -133,3 +133,7 @@ AUTH_USER_MODEL = 'core.User'
 GRAPHENE = {
     "SCHEMA": "core.schema.schema"
 }
+
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = BASE_DIR / 'media'
