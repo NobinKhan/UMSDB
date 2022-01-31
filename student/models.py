@@ -85,7 +85,7 @@ class Student(models.Model):
         choices=typeChoices,
         default='new',
     )
-    program = models.OneToOneField(Program, on_delete=models.PROTECT)
+    program = models.ForeignKey(Program, on_delete=models.PROTECT)
     joinedSemester = models.ForeignKey(
         Semester, on_delete=models.PROTECT, blank=True, null=True)
     joinedSession = models.ForeignKey(
@@ -114,8 +114,6 @@ class Student(models.Model):
 
             self.uid = int(yearLastTwoDigit + semesterNumber +
                            program + type + serial)
-            # self.uid = 5214
-            print(serial)
 
             # raise ValueError("Uid field is empty")
         super(Student, self).save(*args, **kwargs)
