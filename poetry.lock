@@ -110,7 +110,7 @@ python-versions = ">=3.6,<4"
 
 [[package]]
 name = "graphql-relay"
-version = "3.1.4"
+version = "3.1.5"
 description = "Relay library for graphql-core"
 category = "main"
 optional = false
@@ -228,8 +228,8 @@ graphql-core = [
     {file = "graphql_core-3.1.7-py3-none-any.whl", hash = "sha256:9b460f60320be01c7f3b1766cf3e406933003008055079b9d983b8f3988f4400"},
 ]
 graphql-relay = [
-    {file = "graphql-relay-3.1.4.tar.gz", hash = "sha256:c683a19041f7a0942b551c69e5548af59e2b8213d158f0d88f525a63f10ccd23"},
-    {file = "graphql_relay-3.1.4-py3-none-any.whl", hash = "sha256:24ae4e97f781d0bd6c981b50031676d675c8e086519e5bb2cccd238feb470120"},
+    {file = "graphql-relay-3.1.5.tar.gz", hash = "sha256:127f40913f11cb847452ef794931261aae3b222eaaf976f7c8430298534e54d3"},
+    {file = "graphql_relay-3.1.5-py3-none-any.whl", hash = "sha256:d1455316182e1017d06f0b4d4a2ce8bafad38253a6c7c5666fc80d5d516ee5c8"},
 ]
 pillow = [
     {file = "Pillow-9.0.0-cp310-cp310-macosx_10_10_universal2.whl", hash = "sha256:113723312215b25c22df1fdf0e2da7a3b9c357a7d24a93ebbe80bfda4f37a8d4"},
