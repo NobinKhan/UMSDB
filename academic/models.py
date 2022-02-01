@@ -111,10 +111,16 @@ class CourseName(models.Model):
     code = models.CharField(
         verbose_name='Course Code', max_length=250, blank=True, null=True)
 
+    def __str__(self):
+        return str(self.code)
+
 
 class Course(models.Model):
     course = models.ForeignKey(CourseName, on_delete=models.PROTECT)
-    program = models.ForeignKey(Program, on_delete=models.PROTECT)
+    program = models.ManyToManyField(Program)
+
+    def __str__(self):
+        return str(self.course)
 
 
 # class Semester(model.models):
