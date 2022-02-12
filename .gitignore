@@ -115,7 +115,9 @@ media/
 
 # Only for Development only
 **/migrations/**
-!**/migrations/__init__.py
-!**/migrations/__init__.py
+**/migrations/*
+**/migrations/
+**/migrations
+**/migrations/__init__.py
 
 *.sh
