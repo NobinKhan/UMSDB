@@ -7,10 +7,10 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-Django = "^4.0.1"
-graphene-django = "^3.0.0b7"
+Django = "^4.0.2"
 django-countries = "^7.2.1"
 Pillow = "^9.0.0"
+graphene-django = "^2.15.0"
 
 [tool.poetry.dev-dependencies]
 autopep8 = "^1.6.0"
