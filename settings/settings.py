@@ -133,7 +133,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'core.User'
 
 GRAPHENE = {
-    "SCHEMA": "core.schema.schema"
+    "SCHEMA": "api.schema.schema"
 }
 
 MEDIA_URL = '/media/'
