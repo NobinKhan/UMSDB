@@ -14,11 +14,6 @@ dayChoice = (
     ("Friday", 'Friday'),
 )
 
-attendChoice = (
-    ("absent", 'absent'),
-    ("present", 'present'),
-    ("validAbsent", 'validAbsent'),
-)
 
 gradeChoice = (
     ("A+", 'A+'),
@@ -71,17 +66,14 @@ class AssignCourse(models.Model):
 class Attendance(models.Model):
     assignCourse = models.ForeignKey(
         AssignCourse, on_delete=models.PROTECT, blank=True, null=True)
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
     attendenceDate = models.DateField(blank=True, null=True)
-    attend = models.CharField(
-        max_length=12, choices=attendChoice, default='absent')
-    status = models.BooleanField(default='False')
+    student = models.ManyToManyField(Student)
 
     class Meta:
-        unique_together = (('assignCourse', 'student', 'attendenceDate'),)
+        unique_together = (('assignCourse', 'attendenceDate'),)
 
     def __str__(self):
-        return f"{self.assignCourse.course} {self.student} {self.attend} {self.date}"
+        return f"{self.assignCourse.course}  {self.attend} {self.date}"
 
 
 class CourseResult(models.Model):
