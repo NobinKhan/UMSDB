@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'student',
     'teacher',
     'semester',
+    'django_seed',
 ]
 
 MIDDLEWARE = [

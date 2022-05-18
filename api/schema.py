@@ -1,5 +1,6 @@
 import graphene
 from .query import Query
+from .mutation import Mutation
 
 # from graphene.types import schema
 
@@ -9,4 +10,4 @@ from .query import Query
 
 
 
-schema = graphene.Schema(query=Query)
+schema = graphene.Schema(query=Query, mutation=Mutation)

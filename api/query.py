@@ -23,7 +23,7 @@ def convert_bigint_to_float(field, registry=None):
 
 
 class Query(graphene.ObjectType):
-    users = graphene.List(UserType, id=graphene.Int())
+    users = graphene.List(UserType, id=graphene.Int(), email = graphene.String())
     groups = graphene.List(GroupType, id=graphene.Int())
     students = graphene.List(StudentTypes, id=graphene.Int())
     teachers = graphene.List(TeacherType, id=graphene.Int())
@@ -35,9 +35,11 @@ class Query(graphene.ObjectType):
     course = graphene.List(CourseType, id=graphene.Int())
     assignCourse = graphene.List(AssignCourseType, id=graphene.Int())
 
-    def resolve_users(self, info, id=None):
+    def resolve_users(self, info, id=None, email=None):
         if id:
             return User.objects.filter(pk=id)
+        if email:
+            return User.objects.filter(email=email)
         return User.objects.all()
 
     def resolve_groups(self, info, id=None):
