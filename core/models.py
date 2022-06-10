@@ -106,7 +106,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         unique=True,
         help_text=_(
             'Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.'),
-        # validators=[username_validator],
+        validators=[username_validator],
         error_messages={
             'unique': _("A user with that username already exists."),
         },
