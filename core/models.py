@@ -76,6 +76,15 @@ class UserManager(BaseUserManager):
         return self.none()
 
 
+class Nationality(models.Model):
+    name = models.CharField(
+        verbose_name='Nationality', max_length=50, blank=True, null=True)
+
+    def __str__(self):
+        return str(self.name)
+
+
+
 class User(AbstractBaseUser, PermissionsMixin):
     """
     An abstract base class implementing a fully featured User model with
@@ -83,18 +92,12 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     Username and password are required. Other fields are optional.
     """
-    # username_validator = UnicodeUsernameValidator()
-    nationalityChoices = [
-        ('bd', 'Bangladeshi'),
-        ('in', 'Indian'),
-        ('ng', 'Nigerian'),
-        ('ug', 'Uganda'),
-        ('cn', 'chaina'),
-    ]
+    username_validator = UnicodeUsernameValidator()
+    
     genderChoices = [
-        ('m', 'Male'),
-        ('n', 'Female'),
-        ('o', 'Other'),
+        ('Male', 'Male'),
+        ('Female', 'Female'),
+        ('Other', 'Other'),
     ]
 
     username = models.CharField(
@@ -115,9 +118,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_('email address'), unique=True)
     date_of_birth = models.DateField(verbose_name=_("Date of birth"))
     gender = models.CharField(
-        max_length=2,
+        max_length=20,
         choices=genderChoices,
-        default='m',
+        default='Male',
     )
     permanentAddress = models.CharField(verbose_name=_(
         "Parmanent Address"), max_length=1024, null=True)
@@ -134,11 +137,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         "Secondary phone"), max_length=17, blank=True, null=True)
     nid = models.PositiveBigIntegerField(unique=True, null=True)
     birthCertNumber = models.PositiveBigIntegerField(unique=True, null=True)
-    nationality = models.CharField(
-        max_length=2,
-        choices=nationalityChoices,
-        default='bd',
-    )
+    nationality = models.ForeignKey(Nationality, blank=True, null=True,on_delete=models.PROTECT)
     fatherName = models.CharField(_('Father Name'), max_length=150, blank=True)
     motherName = models.CharField(_('Mother Name'), max_length=150, blank=True)
     photo = models.ImageField(verbose_name=_(
