@@ -1,0 +1,113 @@
+We would like to ask you to include Flutter, GO, and AWS (including the admin screen, of course) in the future, but first, can you take over the existing specifications, including source code? We will release the existing Git, so we would like to ask you to summarize any unclear points and make them into questions, and ask JBC to catch up.
+
+We are not sure how much time will be required to catch up to the existing structure, so we will first pay a monthly fee of 50,000 yen * 3 months for the work.
+
+On top of that
+1) New development requirements (client, back-end server, AWS)
+(2) Existing defect requirements (client, back-end server, AWS)
+We will list the details of (1) and (2) above.
+Based on that listing, we would like to place additional orders in order if we receive a quote each time.
+___
+If you are willing to proceed with the above proposal
+
+We will inform you of the following (1) and (2).
+(1) New development requirements
+(2) Requirements for existing defects
+After that, we will sign a contract, create a CAYTO account, share Git, summarize questions from JBC, and answer them.
+We will then receive a quote for each of the items (1) and (2), place the order, and begin work.
+
+Ideally, we envision development - ipa, APK build, (release assistance).v
+
+
+
+
+
+
+
+mutation{
+  createNationality(data:{
+    name:"Nepali"
+  }){
+    nationality{
+      name
+    }
+  }
+}
+
+
+mutation{
+  createGroup(data:{
+    name:"student"
+  }){
+    group{
+      id
+      name
+    }
+  }
+}
+
+
+mutation{
+  createUser(data:{
+    userName:"antor",
+    firstName: "Ariful",
+    lastName:"Islam",
+    email:"antor@email.com",
+    dateOfBirth:"1998-08-23",
+    gender:"Male",
+    permanentAddress:"fultola, nilfamari",
+    presentAddress:"tongabari, ashulia",
+    mobilePhone:"+880173567858",
+    nid:23504320045132,
+    birthCertNumber:2348141008235424242,
+    nationality:2,
+    fatherName:"Mohammad",
+    motherName:"mosammad",
+    photo:"static/images/photo.jpg",
+    password:"nobin123123",
+    group:"teacher"
+  }){
+    user{
+      id
+      username
+      firstName
+      lastName
+      email
+      dateOfBirth
+      gender
+      permanentAddress
+      presentAddress
+      mobilePhone
+      mobilePhone2
+      nid
+      birthCertNumber
+      nationality{
+        name
+      }
+      fatherName
+      motherName
+      photo
+      groups{
+        name
+      }
+    }
+  }
+}
+
+query{
+  users(id:46){
+    gender
+    id
+    email
+    mobilePhone
+    nid
+    birthCertNumber
+  }
+}
+
+query{
+  groups(id:1){
+    id
+    name
+  }
+}

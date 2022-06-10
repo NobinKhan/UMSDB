@@ -1,7 +1,10 @@
 import graphene
-from academic.schema import CreateSession, UpdateSession, DeleteSession
+from academic.mutation import CreateSession, UpdateSession, DeleteSession, CreateDepertment, UpdateDepertment, DeleteDepartment
 
 class Mutation(graphene.ObjectType):
+    createDepartment = CreateDepertment.Field()
+    updateDepertment = UpdateDepertment.Field()
+    deleteDepartment = DeleteDepartment.Field()
     createSession = CreateSession.Field()
     updateSession = UpdateSession.Field()
     deleteSession = DeleteSession.Field()
