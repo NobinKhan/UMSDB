@@ -1,6 +1,7 @@
 from django.db import models
 from core.models import User
-from academic.models import Program, Semester, Session
+from layouts.models import Program, Session, Semester
+
 
 # Create your models here.
 

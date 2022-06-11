@@ -1,6 +1,6 @@
 import graphene
 from functions.handle_error import get_object_or_None
-from .models import Depertment, Semester, Program, Session, CourseName, Course
+from .models import Depertment, Semester, Program, Session
 from .schema import SessionType, DepertmentType
 
 

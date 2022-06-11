@@ -56,32 +56,31 @@ class CreateGroup(Mutation):
         return CreateGroup(group=newGroup)
 
 
-class UpdateGroup(Mutation):
-    class Arguments:
-        id = ID(required=True)
-        name = String(required=True)
-    group = Field(GroupType)
-    message = String()
-    def mutate(root, info, name, id):
-        oldGroup = get_object_or_None(Group, pk=id)
-        if oldGroup:
-            oldGroup.name = name
-            oldGroup.save()
-            return UpdateGroup(group=oldGroup)
-        return UpdateGroup(message="Failed - Object Not found")
+# class UpdateGroup(Mutation):
+#     class Arguments:
+#         id = ID(required=True)
+#         name = String(required=True)
+#     group = Field(GroupType)
+#     message = String()
+#     def mutate(root, info, name, id):
+#         oldGroup = get_object_or_None(Group, pk=id)
+#         if oldGroup:
+#             oldGroup.name = name
+#             oldGroup.save()
+#             return UpdateGroup(group=oldGroup)
+#         return UpdateGroup(message="Failed - Object Not found")
 
 
-
-class DeleteGroup(Mutation):
-    class Arguments:
-        id = ID(required=True)
-    message = String()
-    def mutate(root, info, id):
-        oldGroup = get_object_or_None(Group, pk=id)
-        if oldGroup:
-            oldGroup.delete()
-            return DeleteGroup(message="Succes")
-        return DeleteGroup(message="Failed - Object Not found")
+# class DeleteGroup(Mutation):
+#     class Arguments:
+#         id = ID(required=True)
+#     message = String()
+#     def mutate(root, info, id):
+#         oldGroup = get_object_or_None(Group, pk=id)
+#         if oldGroup:
+#             oldGroup.delete()
+#             return DeleteGroup(message="Succes")
+#         return DeleteGroup(message="Failed - Object Not found")
 
 
 class CreateUserInput(InputObjectType):
@@ -132,9 +131,9 @@ class CreateUser(Mutation):
         newUser.set_password(data.password)
         newUser.save()
         userGroup = get_object_or_None(Group, name=data.group)
-        if userGroup:
+        grp = Group.objects.filter(user = newUser)
+        if userGroup and not grp:
             newUser.groups.add(userGroup)
-
         return CreateUser(user=newUser)
 
 
@@ -206,7 +205,11 @@ class UpdateUser(Mutation):
             oldUser.save()
             userGroup = get_object_or_None(Group, name=data.group)
             if userGroup:
+                oldUser.groups.clear()
                 oldUser.groups.add(userGroup)
+                # grp = Group.objects.filter(user = oldUser)
+                # if not grp:
+                #     print("group found maybe")
             return CreateUser(user=oldUser)
         return DeleteGroup(message="Failed - Object Not found")
 
@@ -231,8 +234,6 @@ class Mutation(ObjectType):
   updateNationality = UpdateNationality.Field()
   deleteNationality = DeleteNationality.Field()
   createGroup = CreateGroup.Field()
-  updateGroup = UpdateGroup.Field()
-  deleteGroup = DeleteGroup.Field()
   createUser = CreateUser.Field()
   updateUser = UpdateUser.Field()
   deleteUser = DeleteUser.Field()

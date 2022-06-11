@@ -40,11 +40,11 @@ INSTALLED_APPS = [
     "corsheaders",
     'django_countries',
     'graphene_django',
-    'core',
-    'academic',
-    'student',
-    'teacher',
-    'semester',
+    'core.apps.CoreConfig',
+    'layouts.apps.LayoutsConfig',
+    'academic.apps.AcademicConfig',
+    'student.apps.StudentConfig',
+    'teacher.apps.TeacherConfig',
     'django_seed',
 ]
 

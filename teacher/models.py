@@ -1,6 +1,7 @@
 from django.db import models
 from core.models import User
-from academic.models import Depertment, Program, Semester, Session
+from layouts.models import Department, Program, Session, Semester
+
 
 # Create your models here.
 
@@ -27,6 +28,7 @@ class Teacher(models.Model):
         max_length=250,
         choices=ssceqChoices,
         default='ssc',
+        blank=True, null=True,
     )
     sscGpa = models.FloatField(verbose_name='SSC GPA', blank=True, null=True)
     sscYear = models.SmallIntegerField(
@@ -48,6 +50,7 @@ class Teacher(models.Model):
         max_length=250,
         choices=hsceqChoices,
         default='hsc',
+        blank=True, null=True,
     )
     hscGpa = models.FloatField(verbose_name='hsc GPA', blank=True, null=True)
     hscYear = models.SmallIntegerField(
@@ -92,7 +95,7 @@ class Teacher(models.Model):
         verbose_name='Certificate/Transcript', upload_to=userDirectoryPath, blank=True, null=True)
 
     # Academic Section
-    depertment = models.ForeignKey(Depertment, on_delete=models.PROTECT)
+    department = models.ForeignKey(Department, blank=True, null=True, on_delete=models.PROTECT)
     joinedYear = models.ForeignKey(
         Session, on_delete=models.PROTECT, blank=True, null=True)
     roleChoices = [
@@ -109,6 +112,7 @@ class Teacher(models.Model):
         max_length=250,
         choices=roleChoices,
         default='Lecturer',
+        blank=True, null=True,
     )
 
     # Teacher ID
@@ -118,10 +122,10 @@ class Teacher(models.Model):
     def save(self, *args, **kwargs):
         if not self.uid:
             staffNumber = '11'
-            depertment = ('0' + str(self.depertment.num)
-                          ) if self.depertment.num < 10 else str(self.depertment.num)
+            department = ('0' + str(self.Department.num)
+                          ) if self.Department.num < 10 else str(self.Department.num)
             obj = Teacher.objects.filter(
-                uid__contains=staffNumber+depertment).last()
+                uid__contains=staffNumber+Department).last()
             lastSerial = 0 if not obj else int(str(obj.uid)[-3:])
             if lastSerial+1 < 10:
                 serial = '00' + str(lastSerial+1)
@@ -130,7 +134,7 @@ class Teacher(models.Model):
             else:
                 serial = str(lastSerial+1)
 
-            self.uid = int(staffNumber + depertment + serial)
+            self.uid = int(staffNumber + Department + serial)
 
             # raise ValueError("Uid field is empty")
         super(Teacher, self).save(*args, **kwargs)

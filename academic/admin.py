@@ -1,22 +1,20 @@
 from django.contrib import admin
-from .models import Course, CourseName, Depertment, Program, Semester, Session
+from .models import Course, CourseName, Attendance, AssignCourse, CourseResult, Period, SemResult, Shedule
 
+# Register your models here.
+admin.site.register(Period)
+admin.site.register(Shedule)
+admin.site.register(AssignCourse)
+admin.site.register(Attendance)
+admin.site.register(CourseResult)
+admin.site.register(SemResult)
+admin.site.register(CourseName)
+admin.site.register(Course)
 
-class ProgramAdmin(admin.ModelAdmin):
-    list_display = ('name', 'degree', 'department', 'num')
-
-
-class DepertmentAdmin(admin.ModelAdmin):
-    list_display = ('name', 'num')
 
 
 # class SemesterAdmin(admin.ModelAdmin):
 #     list_display = ('name', 'number', 'year')
 
 
-admin.site.register(Depertment, DepertmentAdmin)
-admin.site.register(Semester)
-admin.site.register(Program, ProgramAdmin)
-admin.site.register(Session)
-admin.site.register(CourseName)
-admin.site.register(Course)
+
