@@ -40,11 +40,11 @@ INSTALLED_APPS = [
     "corsheaders",
     'django_countries',
     'graphene_django',
-    'core',
-    'academic',
-    'student',
-    'teacher',
-    'semester',
+    'core.apps.CoreConfig',
+    'layouts.apps.LayoutsConfig',
+    'academic.apps.AcademicConfig',
+    'student.apps.StudentConfig',
+    'teacher.apps.TeacherConfig',
     'django_seed',
 ]
 
@@ -115,7 +115,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Dhaka'
 
 USE_I18N = True
 

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "UniversityManagementSystem"
-version = "0.1.0"
+version = "0.1.1"
 description = "University Management System Graphql Api"
 authors = ["NobinKhan <nobin118960@gmail.com>"]
 license = "MIT"
