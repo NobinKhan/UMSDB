@@ -5,28 +5,38 @@ from layouts.models import Program, Semester, Session, Department
 # Create your models here.
 
 
-class CourseName(models.Model):
+
+class Course(models.Model):
     name = models.CharField(
         verbose_name='Course Name', max_length=250, blank=True, null=True)
     code = models.CharField(
         verbose_name='Course Code', max_length=250, blank=True, null=True)
-
-    def __str__(self):
-        return str(self.code)
-
-
-class Course(models.Model):
-    course = models.ForeignKey(CourseName, on_delete=models.PROTECT)
+    department = models.ForeignKey(Department, on_delete=models.PROTECT, blank=True, null=True)
     program = models.ManyToManyField(Program)
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                # conditions=Q(is_active=True),
+                fields=["name", "code"],
+                name="unique_course"
+            )
+        ]
 
     def __str__(self):
-        return str(self.course)
-
+        return f"{self.code} {self.name}"
 
 
 class Period(models.Model):
     startTime = models.TimeField()
     endTime = models.TimeField()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["startTime", "endTime"],
+                name="unique_Class_Time"
+            )
+        ]
 
     def __str__(self):
         return f"{self.startTime}-{self.endTime}"
@@ -44,6 +54,13 @@ class Shedule(models.Model):
     )
     day = models.CharField(max_length=10, choices=dayChoice)
     period = models.ForeignKey(Period, on_delete=models.PROTECT)
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["day", "period"],
+                name="unique_Shedule"
+            )
+        ]
 
     def __str__(self):
         return f"{self.day}-{self.period}"

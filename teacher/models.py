@@ -122,10 +122,10 @@ class Teacher(models.Model):
     def save(self, *args, **kwargs):
         if not self.uid:
             staffNumber = '11'
-            department = ('0' + str(self.Department.num)
-                          ) if self.Department.num < 10 else str(self.Department.num)
+            department = ('0' + str(self.department.num)
+                          ) if self.department.num < 10 else str(self.department.num)
             obj = Teacher.objects.filter(
-                uid__contains=staffNumber+Department).last()
+                uid__contains=staffNumber+department).last()
             lastSerial = 0 if not obj else int(str(obj.uid)[-3:])
             if lastSerial+1 < 10:
                 serial = '00' + str(lastSerial+1)
@@ -134,7 +134,7 @@ class Teacher(models.Model):
             else:
                 serial = str(lastSerial+1)
 
-            self.uid = int(staffNumber + Department + serial)
+            self.uid = int(staffNumber + department + serial)
 
             # raise ValueError("Uid field is empty")
         super(Teacher, self).save(*args, **kwargs)

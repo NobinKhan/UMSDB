@@ -7,6 +7,7 @@ from teacher.models import Teacher
 
 class TeacherAdmin(admin.ModelAdmin):
     readonly_fields = ['uid']
+    list_display=('id','uid')
 
 
 admin.site.register(Teacher, TeacherAdmin)

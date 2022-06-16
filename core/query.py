@@ -2,7 +2,6 @@ from graphene import ObjectType, List, Int, String, Float
 from .type import UserType, GroupType, NationalityType
 from .models import User, Nationality
 from django.contrib.auth.models import Group
-from django.db import models
 # from graphene_django.converter import convert_django_field
 
 # @convert_django_field.register(models.PositiveBigIntegerField)

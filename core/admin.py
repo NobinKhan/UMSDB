@@ -13,6 +13,7 @@ class UserAdminConfig(UserAdmin):
     readonly_fields = ('username', )
     ordering = ('-date_joined', )
     list_display = (
+        'id',
         'email',
         full_name,
         'is_active'
