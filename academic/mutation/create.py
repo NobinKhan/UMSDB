@@ -31,7 +31,7 @@ class CreateCourse(Mutation):
             )
             newCourse.save()
             newCourse.program.set(programObjects)
-        return CreateCourse(course=newCourse)
+        return CreateCourse(course=None)
 
 
 class CreatePeriod(Mutation):
