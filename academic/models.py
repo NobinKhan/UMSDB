@@ -8,9 +8,9 @@ from layouts.models import Program, Semester, Session, Department
 
 class Course(models.Model):
     name = models.CharField(
-        verbose_name='Course Name', max_length=250, blank=True, null=True)
+        verbose_name='Course Name', unique=True, max_length=100, blank=True, null=True)
     code = models.CharField(
-        verbose_name='Course Code', max_length=250, blank=True, null=True)
+        verbose_name='Course Code',unique=True, max_length=20, blank=True, null=True)
     department = models.ForeignKey(Department, on_delete=models.PROTECT, blank=True, null=True)
     program = models.ManyToManyField(Program)
     class Meta:
@@ -88,7 +88,13 @@ class Attendance(models.Model):
     student = models.ManyToManyField(Student)
 
     class Meta:
-        unique_together = (('assignCourse', 'attendenceDate'),)
+        constraints = [
+            models.UniqueConstraint(
+                # conditions=Q(is_active=True),
+                fields=['assignCourse', 'attendenceDate'],
+                name="unique_attendance"
+            )
+        ]
 
     def __str__(self):
         return f"{self.assignCourse.course}  {self.attend} {self.date}"

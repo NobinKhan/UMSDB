@@ -3,9 +3,15 @@ from django.db import models
 # Create your models here.
 class Department(models.Model):
     name = models.CharField(
-        verbose_name='Department', max_length=250, blank=True, null=True)
-    num = models.IntegerField(blank=True, null=True)
-
+        verbose_name='Department', unique=True, max_length=100, blank=True, null=True)
+    num = models.SmallIntegerField(unique=True,blank=True, null=True)
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["name", "num"],
+                name="unique_department"
+            )
+        ]
     def __str__(self):
         return str(self.name)
 
@@ -18,12 +24,18 @@ class Semester(models.Model):
     ]
     name = models.CharField(
         verbose_name='Semester',
-        max_length=250,
+        max_length=20,
         choices=semesterChoices,
         default=1,
     )
-    num = models.IntegerField(blank=True, null=True)
-
+    num = models.SmallIntegerField(unique=True,blank=True, null=True)
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["name", "num"],
+                name="unique_semster"
+            )
+        ]
     def __str__(self):
         return str(self.name)
 
@@ -86,18 +98,24 @@ class Program(models.Model):
     department = models.ForeignKey(Department, on_delete=models.PROTECT)
     degree = models.CharField(
         verbose_name='Degree Type',
-        max_length=250,
+        max_length=20,
         choices=degreeChoices,
         default='bachelor',
     )
-    num = models.IntegerField(blank=True, null=True)
-
+    num = models.SmallIntegerField(unique=True,blank=True, null=True)
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["name", "num", "department", "degree"],
+                name="unique_program"
+            )
+        ]
     def __str__(self):
         return str(self.name)
 
 
 class Session(models.Model):
-    year = models.IntegerField()
+    year = models.SmallIntegerField(unique=True)
 
     def __str__(self):
         return str(self.year)
