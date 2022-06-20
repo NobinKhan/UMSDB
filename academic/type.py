@@ -1,4 +1,4 @@
-from .models import AssignCourse, Course, Period, Shedule, Attendance, CourseResult, SemResult
+from .models import AssignCourse, Course, Period, Shedule, Attendance, CourseResult, SemResult, AttendanceStatus
 from graphene_django import DjangoObjectType
 
 
@@ -27,6 +27,11 @@ class AssignCourseType(DjangoObjectType):
 class AttendanceType(DjangoObjectType):
     class Meta:
         model = Attendance
+
+
+class AttendanceStatusType(DjangoObjectType):
+    class Meta:
+        model = AttendanceStatus
 
 
 class CourseResultType(DjangoObjectType):

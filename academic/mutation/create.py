@@ -1,10 +1,10 @@
-from graphene import String, Mutation, Field, Int, ID, List, InputObjectType, Time
+from graphene import String, Mutation, Field, Int, ID, List, InputObjectType, Time, Date
 from functions.handle_error import get_object_or_None
-from academic.models import Course, AssignCourse, Period, Shedule, Attendance, CourseResult, SemResult
+from academic.models import Course, AssignCourse, Period, Shedule, Attendance, CourseResult, SemResult, AttendanceStatus
 from teacher.models import Teacher
 from student.models import Student
 from layouts.models import Program, Department, Semester, Session
-from academic.type import CourseType, AssignCourseType, PeriodType, SheduleType, AttendanceType, CourseResultType, SemResultType
+from academic.type import CourseType, AssignCourseType, PeriodType, SheduleType, AttendanceType, CourseResultType, SemResultType, AttendanceStatusType
 
 
 class CourseInput(InputObjectType):
@@ -104,5 +104,65 @@ class CreateAssignCourse(Mutation):
         return CreateAssignCourse(assignCourse=None)
 
 
-        # print("*************\n \n ")
-    #    [Shedule.dayChoice[d][0] for d in range(len(Shedule.dayChoice))] is same as [d[0] for d in Shedule.day.field.choices]
+class AttendanceInput(InputObjectType):
+    assignCourseId = ID(required=True)
+    date = Date(required=True)
+    sheduleId = ID(required=True)
+
+
+class CreateAttendance(Mutation):
+    class Arguments:
+        data = AttendanceInput()
+
+    attendance = Field(AttendanceType)
+    def mutate(root, info, data):
+        sheduleObject = get_object_or_None(Shedule, pk=data.sheduleId)
+        assignCourseObject = get_object_or_None(AssignCourse, pk=data.assignCourseId)
+        sheduleObjects = assignCourseObject.shedule.all()
+        if sheduleObject in sheduleObjects and data.date:
+            newAttendance = Attendance(
+                shedule = sheduleObject,
+                assignCourse = assignCourseObject,
+                attendenceDate = data.date,
+            )
+            newAttendance.save()
+            return CreateAttendance(attendance=newAttendance)
+        return CreateAttendance(attendance=None)
+
+
+class AttendanceStatusInput(InputObjectType):
+    attendanceId = ID(required=True)
+    studentId = ID(required=True)
+    status = String(required=True)
+
+
+class CreateAttendanceStatus(Mutation):
+    class Arguments:
+        data = AttendanceStatusInput()
+
+    attendanceStatus = Field(AttendanceStatusType)
+    def mutate(root, info, data):
+        studentObject = get_object_or_None(Student, pk=data.studentId)
+        attendanceObject = get_object_or_None(Attendance, pk=data.attendanceId)
+        studentObjects = attendanceObject.assignCourse.student.all()
+        if data.status in [d[0] for d in AttendanceStatus.attendanceChoices] and studentObject in studentObjects:
+            newAttendanceStatus = AttendanceStatus(
+                student = studentObject,
+                attendance = attendanceObject,
+                status = data.status,
+            )
+            newAttendanceStatus.save()
+            return CreateAttendanceStatus(attendanceStatus=newAttendanceStatus)
+        return CreateAttendanceStatus(attendanceStatus=None)
+
+
+
+
+
+# print("*************\n \n ")
+# print(sheduleObject)
+# print(obj)
+# if sheduleObject in obj:
+#     print(True)
+# print("\n \n*************")
+#    [Shedule.dayChoice[d][0] for d in range(len(Shedule.dayChoice))] is same as [d[0] for d in Shedule.day.field.choices]

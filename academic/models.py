@@ -75,7 +75,12 @@ class AssignCourse(models.Model):
     student = models.ManyToManyField(Student, blank=True)
 
     class Meta:
-        unique_together = (('course', 'semester', 'session', 'teacher'),)
+        constraints = [
+            models.UniqueConstraint(
+                fields=['course', 'semester', 'session', 'teacher'],
+                name="unique_AssignCourse"
+            )
+        ]
 
     def __str__(self):
         return f"{self.semester} {self.session} {self.course}"
@@ -85,19 +90,36 @@ class Attendance(models.Model):
     assignCourse = models.ForeignKey(
         AssignCourse, on_delete=models.PROTECT, blank=True, null=True)
     attendenceDate = models.DateField(blank=True, null=True)
-    student = models.ManyToManyField(Student)
+    shedule = models.ForeignKey(Shedule, on_delete=models.PROTECT)
+    student = models.ManyToManyField(Student, through='AttendanceStatus')
 
     class Meta:
         constraints = [
             models.UniqueConstraint(
                 # conditions=Q(is_active=True),
-                fields=['assignCourse', 'attendenceDate'],
+                fields=['assignCourse', 'attendenceDate','shedule'],
                 name="unique_attendance"
             )
         ]
 
     def __str__(self):
-        return f"{self.assignCourse.course}  {self.attend} {self.date}"
+        return f"{self.assignCourse.course}  {self.attendenceDate}"
+
+
+class AttendanceStatus(models.Model):
+    attendanceChoices = (
+    ("Present", 'Present'),
+    ("Absent", 'Absent'),
+    ("AbsentOnLeave", 'AbsentOnLeave'),
+    )
+    attendance = models.ForeignKey(Attendance, on_delete=models.PROTECT)
+    student = models.ForeignKey(Student, on_delete=models.PROTECT)
+    status = models.CharField(max_length=15, choices=attendanceChoices)
+    class Meta:
+        verbose_name = "Attendance Status"
+
+    def __str__(self):
+        return f"{self.attendance}  {self.student} {self.status}"
 
 
 class CourseResult(models.Model):
@@ -159,22 +181,3 @@ class SemResult(models.Model):
     def __str__(self):
         return f"{self.assignCourse.course} {self.student} {self.attend} {self.date}"
 
-# class Semester(model.models):
-#     techer = 'course1' "course2"
-#     student = ''
-#     course = 'forein'
-#     result = 'srfrser'
-
-
-# DepartmentChoices = [
-#     (1, 'Fashion Design'),
-#     (2, 'Architecture'),
-#     (3, 'Computer Science'),
-#     (4, 'Graphic Design & Arts'),
-#     (5, 'Music & Dance'),
-#     (6, 'Business'),
-#     (7, 'English'),
-#     (8, 'Islamic Studies'),
-#     (9, 'Sociology & Politics'),
-#     (10, 'Bangla'),
-# ]

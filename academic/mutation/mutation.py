@@ -1,5 +1,5 @@
 from graphene import ObjectType
-from .create import CreateCourse, CreatePeriod, CreateShedule, CreateAssignCourse
+from .create import CreateCourse, CreatePeriod, CreateShedule, CreateAssignCourse, CreateAttendance, CreateAttendanceStatus
 
 
 
@@ -11,5 +11,7 @@ class Mutation(ObjectType):
   createPeriod = CreatePeriod.Field()
   createShedule = CreateShedule.Field()
   createAssignCourse = CreateAssignCourse.Field()
+  createAttendance = CreateAttendance.Field()
+  createAttendanceStatus = CreateAttendanceStatus.Field()
 #   updateCourse = UpdateCourse.Field()
 #   deleteCourse = DeleteCourse.Field()

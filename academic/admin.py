@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Course, Attendance, AssignCourse, CourseResult, Period, SemResult, Shedule
+from .models import Course, Attendance, AssignCourse, CourseResult, Period, SemResult, Shedule, AttendanceStatus
 
 # Register your models here.
 
@@ -12,14 +12,28 @@ class CourseAdmin(admin.ModelAdmin):
 class PeriodAdmin(admin.ModelAdmin):
     list_display=('id','startTime','endTime')
 
+
 @admin.register(Shedule)
 class SheduleAdmin(admin.ModelAdmin):
     list_display=('id','day','period')
 
 
+@admin.register(AttendanceStatus)
+class AttendanceStatusAdmin(admin.ModelAdmin):
+    list_display=('id','attendance','student','status')
 
-admin.site.register(AssignCourse)
-admin.site.register(Attendance)
+
+@admin.register(Attendance)
+class AttendanceAdmin(admin.ModelAdmin):
+    list_display=('id','assignCourse','attendenceDate')
+
+
+@admin.register(AssignCourse)
+class AssignCourseAdmin(admin.ModelAdmin):
+    list_display=('id','semester','session','course','teacher')
+
+
+
 admin.site.register(CourseResult)
 admin.site.register(SemResult)
 
