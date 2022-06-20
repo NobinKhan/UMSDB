@@ -1,6 +1,6 @@
 from graphene import ObjectType, List, Int, String, Float
-from .models import Course, AssignCourse, Period, Shedule, Attendance, CourseResult, SemResult
-from .type import CourseType, AssignCourseType, PeriodType, SheduleType, AttendanceType, CourseResultType, SemResultType
+from .models import Course, AssignCourse, Period, Shedule, Attendance, CourseResult, SemResult, AttendanceStatus
+from .type import CourseType, AssignCourseType, PeriodType, SheduleType, AttendanceType, CourseResultType, SemResultType, AttendanceStatusType
 
 
 
@@ -10,6 +10,7 @@ class Query(ObjectType):
     period = List(PeriodType, id=Int())
     Shedule = List(SheduleType, id=Int())
     attendance = List(AttendanceType, id=Int())
+    attendanceStatus = List(AttendanceStatusType, id=Int())
     courseResult = List(CourseResultType, id=Int())
     semResult = List(SemResultType, id=Int())
 
@@ -38,6 +39,11 @@ class Query(ObjectType):
         if id:
             return Attendance.objects.filter(pk=id)
         return Attendance.objects.all()
+
+    def resolve_attendanceStatus(self, info, id=None):
+        if id:
+            return AttendanceStatus.objects.filter(pk=id)
+        return AttendanceStatus.objects.all()
     
     def resolve_courseResult(self, info, id=None):
         if id:
