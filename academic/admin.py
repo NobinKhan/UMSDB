@@ -33,10 +33,14 @@ class AssignCourseAdmin(admin.ModelAdmin):
     list_display=('id','semester','session','course','teacher')
 
 
+@admin.register(CourseResult)
+class CourseResultAdmin(admin.ModelAdmin):
+    readonly_fields = ['midAddDate', 'midLastEditDate','finalAddDate', 'finalLastEditDate']
+    list_display=('id','assignCourse','student','grade')
 
-admin.site.register(CourseResult)
+
+
 admin.site.register(SemResult)
-
 
 
 # class SemesterAdmin(admin.ModelAdmin):
