@@ -2,6 +2,7 @@ from django.db import models
 from teacher.models import Teacher
 from student.models import Student
 from layouts.models import Program, Semester, Session, Department
+from datetime import datetime
 # Create your models here.
 
 
@@ -117,13 +118,19 @@ class AttendanceStatus(models.Model):
     status = models.CharField(max_length=15, choices=attendanceChoices)
     class Meta:
         verbose_name = "Attendance Status"
+        constraints = [
+            models.UniqueConstraint(
+                # conditions=Q(is_active=True),
+                fields=['attendance', 'student'],
+                name="unique_attendanceStatus"
+            )
+        ]
 
     def __str__(self):
         return f"{self.attendance}  {self.student} {self.status}"
 
 
 class CourseResult(models.Model):
-
     gradeChoice = (
         ("A+", 'A+'),
         ("A", 'A'),
@@ -142,25 +149,66 @@ class CourseResult(models.Model):
     assignCourse = models.ForeignKey(
         AssignCourse, on_delete=models.PROTECT, blank=True, null=True)
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    midMark = models.FloatField(
-        verbose_name='Midterm Mark', blank=True, null=True)
-    finalMark = models.FloatField(
-        verbose_name='Final Mark', blank=True, null=True)
     creditHours = models.FloatField(
         verbose_name='Credit Hours', blank=True, null=True)
+    
+    midMark = models.FloatField(
+        verbose_name='Midterm Mark', blank=True, null=True)
+    midAddDate = models.DateTimeField(blank=True, null=True)
+    midLastEditDate = models.DateTimeField(blank=True, null=True)
+    midLock = models.BooleanField(default=False)
+    
+    finalMark = models.FloatField(
+        verbose_name='Final Mark', blank=True, null=True)
+    finalAddDate = models.DateTimeField(blank=True, null=True)
+    finalLastEditDate = models.DateTimeField(blank=True, null=True)
+    finalLock = models.BooleanField(default=True)
+    
     gradePoint = models.FloatField(
         verbose_name='Grade Point', blank=True, null=True)
     grade = models.CharField(
         max_length=12, choices=gradeChoice, default='F')
-    midDate = models.DateTimeField(auto_now_add=True)
-    finalDate = models.DateTimeField(auto_now_add=True)
     lastEditDate = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = (('assignCourse', 'student'),)
-
+        constraints = [
+            models.UniqueConstraint(
+                # conditions=Q(is_active=True),
+                fields=['assignCourse', 'student'],
+                name="unique_courseResult"
+            )
+        ]
+    
     def __str__(self):
-        return f"{self.assignCourse.course} {self.student} {self.attend} {self.date}"
+        return f"{self.assignCourse.course} {self.student}"
+
+    def save(self, *args, **kwargs):
+        if not self.student in self.assignCourse.student.all():
+            raise ValueError("Student not registered in this course")
+        currentTime = datetime.now()
+        if self.pk:
+            obj = CourseResult.objects.get(pk=self.pk)
+            if obj.midLock and obj.midMark != self.midMark:
+                raise ValueError("Sorry you can't change Mid term result")
+            if obj.finalLock and obj.finalMark != self.finalMark:
+                raise ValueError("Sorry you can't change final term result")
+            if not obj.midMark and self.midMark:
+                self.midAddDate = currentTime
+                self.midLastEditDate = currentTime
+            if obj.midMark and self.midMark and obj.midMark != self.midMark:
+                self.midLastEditDate = currentTime
+            if not obj.finalMark and self.finalMark:
+                self.finalAddDate = currentTime
+                self.finalLastEditDate = currentTime
+            if obj.finalMark and self.finalMark and obj.finalMark != self.finalMark:
+                self.finalLastEditDate = currentTime
+        else:
+            if self.finalMark:
+                raise ValueError("Sorry you can't assign final exam marks before mid terms")
+            if self.midMark:
+                self.midAddDate = currentTime
+                self.midLastEditDate = currentTime
+        super(CourseResult, self).save(*args, **kwargs)
 
 
 class SemResult(models.Model):

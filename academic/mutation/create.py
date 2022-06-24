@@ -1,4 +1,4 @@
-from graphene import String, Mutation, Field, Int, ID, List, InputObjectType, Time, Date
+from graphene import String, Mutation, Field, Int, ID, List, InputObjectType, Time, Date, Float
 from functions.handle_error import get_object_or_None
 from academic.models import Course, AssignCourse, Period, Shedule, Attendance, CourseResult, SemResult, AttendanceStatus
 from teacher.models import Teacher
@@ -154,6 +154,35 @@ class CreateAttendanceStatus(Mutation):
             newAttendanceStatus.save()
             return CreateAttendanceStatus(attendanceStatus=newAttendanceStatus)
         return CreateAttendanceStatus(attendanceStatus=None)
+
+
+class CourseResultInput(InputObjectType):
+    assignCourseId = ID(required=True)
+    studentId = ID(required=True)
+    creditHours = Float(required=True)
+    midMark = Float(required=True)
+
+
+class CreateCourseResult(Mutation):
+    class Arguments:
+        data = CourseResultInput()
+
+    courseResult = Field(CourseResultType)
+    def mutate(root, info, data):
+        studentObject = get_object_or_None(Student, pk=data.studentId)
+        assignCourseObject = get_object_or_None(AssignCourse, pk=data.assignCourseId)
+        # studentObjects = attendanceObject.assignCourse.student.all()
+        # if data.status in [d[0] for d in CourseResult.attendanceChoices] and studentObject in studentObjects:
+        if studentObject and assignCourseObject:
+            newCourseResult = CourseResult(
+                assignCourse = assignCourseObject,
+                student = studentObject,
+                creditHours = data.creditHours,
+                midMark = data.midMark,
+            )
+            newCourseResult.save()
+            return CreateCourseResult(courseResult=newCourseResult)
+        return CreateCourseResult(courseResult=None)
 
 
 
