@@ -1,0 +1,57 @@
+[{
+        "model": "core.nationality",
+        "pk": 1,
+        "fields": {
+            "name": "Bangladeshi"
+        }
+    },
+    {
+        "model": "core.nationality",
+        "pk": 2,
+        "fields": {
+            "name": "Indian"
+        }
+    },
+    {
+        "model": "core.nationality",
+        "pk": 3,
+        "fields": {
+            "name": "African"
+        }
+    },
+    {
+        "model": "core.nationality",
+        "pk": 4,
+        "fields": {
+            "name": "Uganda"
+        }
+    },
+    {
+        "model": "core.nationality",
+        "pk": 5,
+        "fields": {
+            "name": "Italian"
+        }
+    },
+    {
+        "model": "core.nationality",
+        "pk": 6,
+        "fields": {
+            "name": "Chinese"
+        }
+    },
+    {
+        "model": "core.nationality",
+        "pk": 7,
+        "fields": {
+            "name": "American"
+        }
+    },
+    {
+        "model": "core.nationality",
+        "pk": 8,
+        "fields": {
+            "name": "Canadian"
+        }
+    }
+]

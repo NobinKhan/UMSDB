@@ -121,3 +121,6 @@ media/
 **/migrations/__init__.py
 
 *.sh
+dummydata.json
+dsrdfrsg.txt
+db.json

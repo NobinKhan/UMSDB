@@ -1,0 +1,73 @@
+[{
+        "model": "layouts.department",
+        "pk": 1,
+        "fields": {
+            "name": "Fashion Design & Apparel Manufacturing",
+            "num": 1
+        }
+    },
+    {
+        "model": "layouts.department",
+        "pk": 2,
+        "fields": {
+            "name": "Architecture",
+            "num": 2
+        }
+    },
+    {
+        "model": "layouts.department",
+        "pk": 3,
+        "fields": {
+            "name": "Computer Science",
+            "num": 3
+        }
+    },
+    {
+        "model": "layouts.department",
+        "pk": 4,
+        "fields": {
+            "name": "Fine Arts",
+            "num": 4
+        }
+    },
+    {
+        "model": "layouts.department",
+        "pk": 5,
+        "fields": {
+            "name": "Business Administration",
+            "num": 5
+        }
+    },
+    {
+        "model": "layouts.department",
+        "pk": 6,
+        "fields": {
+            "name": "Law",
+            "num": 6
+        }
+    },
+    {
+        "model": "layouts.department",
+        "pk": 7,
+        "fields": {
+            "name": "Language",
+            "num": 7
+        }
+    },
+    {
+        "model": "layouts.department",
+        "pk": 8,
+        "fields": {
+            "name": "Sociology & Anthropology",
+            "num": 8
+        }
+    },
+    {
+        "model": "layouts.department",
+        "pk": 9,
+        "fields": {
+            "name": "Government & Politics",
+            "num": 9
+        }
+    }
+]
