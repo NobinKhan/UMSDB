@@ -2,7 +2,7 @@ from django.db import models
 from teacher.models import Teacher
 from student.models import Student
 from layouts.models import Program, Semester, Session, Department
-from datetime import datetime
+from django.utils import timezone
 # Create your models here.
 
 
@@ -185,7 +185,7 @@ class CourseResult(models.Model):
     def save(self, *args, **kwargs):
         if not self.student in self.assignCourse.student.all():
             raise ValueError("Student not registered in this course")
-        currentTime = datetime.now()
+        currentTime = timezone.now()
         if self.pk:
             obj = CourseResult.objects.get(pk=self.pk)
             if obj.midLock and obj.midMark != self.midMark:
