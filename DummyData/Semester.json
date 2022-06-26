@@ -1,0 +1,22 @@
+[{
+    "model": "layouts.semester",
+    "pk": 1,
+    "fields": {
+        "name": "summer",
+        "num": 1
+    }
+}, {
+    "model": "layouts.semester",
+    "pk": 2,
+    "fields": {
+        "name": "spring",
+        "num": 2
+    }
+}, {
+    "model": "layouts.semester",
+    "pk": 3,
+    "fields": {
+        "name": "fall",
+        "num": 3
+    }
+}]

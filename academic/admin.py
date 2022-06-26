@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Course, Attendance, AssignCourse, CourseResult, Period, SemResult, Shedule, AttendanceStatus
+from .models import Course, Attendance, AssignCourse, CourseResult, Period, SemResult, Shedule, AttendanceStatus, RetakeCourse
 
 # Register your models here.
 
@@ -33,18 +33,19 @@ class AssignCourseAdmin(admin.ModelAdmin):
     list_display=('id','semester','session','course','teacher')
 
 
+@admin.register(RetakeCourse)
+class RetakeCourseAdmin(admin.ModelAdmin):
+    list_display=('id','assignCourse','student','retake')
+
+
 @admin.register(CourseResult)
 class CourseResultAdmin(admin.ModelAdmin):
     readonly_fields = ['midAddDate', 'midLastEditDate','finalAddDate', 'finalLastEditDate']
     list_display=('id','assignCourse','student','grade')
 
 
-
-admin.site.register(SemResult)
-
-
-# class SemesterAdmin(admin.ModelAdmin):
-#     list_display = ('name', 'number', 'year')
-
-
+@admin.register(SemResult)
+class SemResultAdmin(admin.ModelAdmin):
+    readonly_fields = ['sgpa', 'totalCredit','earnedCredit', 'date']
+    list_display=('id','semester','session','student','sgpa')
 

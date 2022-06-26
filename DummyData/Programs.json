@@ -1,0 +1,298 @@
+[{
+    "model": "layouts.program",
+    "pk": 1,
+    "fields": {
+        "name": "BA (Hons) in Fashion Design & Technology",
+        "department": 1,
+        "degree": "bachelor",
+        "num": 1
+    }
+}, {
+    "model": "layouts.program",
+    "pk": 2,
+    "fields": {
+        "name": "M.A. in Fashion Design",
+        "department": 1,
+        "degree": "master",
+        "num": 2
+    }
+}, {
+    "model": "layouts.program",
+    "pk": 3,
+    "fields": {
+        "name": "BA (Hons) in Apparel Manufacturing Management & Technology",
+        "department": 1,
+        "degree": "bachelor",
+        "num": 3
+    }
+}, {
+    "model": "layouts.program",
+    "pk": 4,
+    "fields": {
+        "name": "MBA in Product & Fashion Merchandizing",
+        "department": 1,
+        "degree": "master",
+        "num": 4
+    }
+}, {
+    "model": "layouts.program",
+    "pk": 5,
+    "fields": {
+        "name": "BA (Hons) in Interior Architecture",
+        "department": 2,
+        "degree": "bachelor",
+        "num": 5
+    }
+}, {
+    "model": "layouts.program",
+    "pk": 6,
+    "fields": {
+        "name": "M.A. in Interior Design",
+        "department": 2,
+        "degree": "master",
+        "num": 6
+    }
+}, {
+    "model": "layouts.program",
+    "pk": 7,
+    "fields": {
+        "name": "B. Sc (Hons) in Computer Science & Engineering",
+        "department": 3,
+        "degree": "bachelor",
+        "num": 7
+    }
+}, {
+    "model": "layouts.program",
+    "pk": 8,
+    "fields": {
+        "name": "B. Sc (Hons) in Computer Science & Information Technology",
+        "department": 3,
+        "degree": "bachelor",
+        "num": 8
+    }
+}, {
+    "model": "layouts.program",
+    "pk": 9,
+    "fields": {
+        "name": "BA (Hons) in Graphic Design & Multimedia",
+        "department": 3,
+        "degree": "bachelor",
+        "num": 9
+    }
+}, {
+    "model": "layouts.program",
+    "pk": 10,
+    "fields": {
+        "name": "Bachelor of Architecture",
+        "department": 2,
+        "degree": "bachelor",
+        "num": 10
+    }
+}, {
+    "model": "layouts.program",
+    "pk": 11,
+    "fields": {
+        "name": "BA (Hons) in Product Design",
+        "department": 2,
+        "degree": "bachelor",
+        "num": 11
+    }
+}, {
+    "model": "layouts.program",
+    "pk": 12,
+    "fields": {
+        "name": "M.A. in Product Design",
+        "department": 1,
+        "degree": "master",
+        "num": 12
+    }
+}, {
+    "model": "layouts.program",
+    "pk": 13,
+    "fields": {
+        "name": "achelor of Fine Arts (Hons)",
+        "department": 4,
+        "degree": "bachelor",
+        "num": 13
+    }
+}, {
+    "model": "layouts.program",
+    "pk": 14,
+    "fields": {
+        "name": "Master of Fine Arts",
+        "department": 4,
+        "degree": "master",
+        "num": 14
+    }
+}, {
+    "model": "layouts.program",
+    "pk": 15,
+    "fields": {
+        "name": "Bachelor of Music (Hons) Classical, Nazrul, Rabindra Sangeet",
+        "department": 4,
+        "degree": "bachelor",
+        "num": 15
+    }
+}, {
+    "model": "layouts.program",
+    "pk": 16,
+    "fields": {
+        "name": "Master of Music Classical, Nazrul, Rabindra Sangeet",
+        "department": 4,
+        "degree": "master",
+        "num": 16
+    }
+}, {
+    "model": "layouts.program",
+    "pk": 17,
+    "fields": {
+        "name": "Bachelor of Music (Hons) in Dance",
+        "department": 4,
+        "degree": "bachelor",
+        "num": 17
+    }
+}, {
+    "model": "layouts.program",
+    "pk": 18,
+    "fields": {
+        "name": "Master of Music in Dance",
+        "department": 4,
+        "degree": "master",
+        "num": 18
+    }
+}, {
+    "model": "layouts.program",
+    "pk": 19,
+    "fields": {
+        "name": "Bachelor of Business Administration (BBA)",
+        "department": 5,
+        "degree": "bachelor",
+        "num": 19
+    }
+}, {
+    "model": "layouts.program",
+    "pk": 20,
+    "fields": {
+        "name": "Master of Business Administration (MBA)",
+        "department": 5,
+        "degree": "master",
+        "num": 20
+    }
+}, {
+    "model": "layouts.program",
+    "pk": 21,
+    "fields": {
+        "name": "Bachelor of Laws (LLB)",
+        "department": 6,
+        "degree": "bachelor",
+        "num": 21
+    }
+}, {
+    "model": "layouts.program",
+    "pk": 22,
+    "fields": {
+        "name": "Master of Laws (LLM)",
+        "department": 6,
+        "degree": "master",
+        "num": 22
+    }
+}, {
+    "model": "layouts.program",
+    "pk": 23,
+    "fields": {
+        "name": "BA (Hons) in English",
+        "department": 7,
+        "degree": "bachelor",
+        "num": 23
+    }
+}, {
+    "model": "layouts.program",
+    "pk": 24,
+    "fields": {
+        "name": "MA in English",
+        "department": 7,
+        "degree": "master",
+        "num": 24
+    }
+}, {
+    "model": "layouts.program",
+    "pk": 25,
+    "fields": {
+        "name": "BSS (Hons) in Sociology & Anthropology",
+        "department": 8,
+        "degree": "bachelor",
+        "num": 25
+    }
+}, {
+    "model": "layouts.program",
+    "pk": 26,
+    "fields": {
+        "name": "MSS in Sociology & Anthropology",
+        "department": 8,
+        "degree": "master",
+        "num": 26
+    }
+}, {
+    "model": "layouts.program",
+    "pk": 27,
+    "fields": {
+        "name": "BA (Hons) in Islamic Studies",
+        "department": 7,
+        "degree": "bachelor",
+        "num": 27
+    }
+}, {
+    "model": "layouts.program",
+    "pk": 28,
+    "fields": {
+        "name": "MA in Islamic Studies",
+        "department": 7,
+        "degree": "master",
+        "num": 28
+    }
+}, {
+    "model": "layouts.program",
+    "pk": 29,
+    "fields": {
+        "name": "BA (Hons) in Bangla",
+        "department": 7,
+        "degree": "bachelor",
+        "num": 29
+    }
+}, {
+    "model": "layouts.program",
+    "pk": 30,
+    "fields": {
+        "name": "MA in Bangla",
+        "department": 7,
+        "degree": "master",
+        "num": 30
+    }
+}, {
+    "model": "layouts.program",
+    "pk": 31,
+    "fields": {
+        "name": "BSS (Hons) in Government & Politics",
+        "department": 9,
+        "degree": "bachelor",
+        "num": 31
+    }
+}, {
+    "model": "layouts.program",
+    "pk": 32,
+    "fields": {
+        "name": "MSS in Government & Politics",
+        "department": 9,
+        "degree": "master",
+        "num": 32
+    }
+}, {
+    "model": "layouts.program",
+    "pk": 33,
+    "fields": {
+        "name": "Bachelor of Education (B. Ed.)",
+        "department": 8,
+        "degree": "bachelor",
+        "num": 33
+    }
+}]

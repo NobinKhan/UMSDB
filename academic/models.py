@@ -73,7 +73,7 @@ class AssignCourse(models.Model):
     session = models.ForeignKey(Session, on_delete=models.PROTECT)
     course = models.ForeignKey(Course, on_delete=models.PROTECT)
     teacher = models.ForeignKey(Teacher, on_delete=models.PROTECT)
-    student = models.ManyToManyField(Student, blank=True)
+    student = models.ManyToManyField(Student, through='RetakeCourse', blank=True)
 
     class Meta:
         constraints = [
@@ -85,6 +85,23 @@ class AssignCourse(models.Model):
 
     def __str__(self):
         return f"{self.semester} {self.session} {self.course}"
+
+
+class RetakeCourse(models.Model):
+    assignCourse = models.ForeignKey(AssignCourse, on_delete=models.PROTECT)
+    student = models.ForeignKey(Student, on_delete=models.PROTECT)
+    retake = models.BooleanField(default=False)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['assignCourse', 'student', 'retake'],
+                name="unique_RetakeCourse"
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.assignCourse} {self.student} {self.retake}"
 
 
 class Attendance(models.Model):
@@ -140,10 +157,8 @@ class CourseResult(models.Model):
         ("B-", 'B-'),
         ("C+", 'C+'),
         ("C", 'C'),
-        ("C-", 'C-'),
-        ("D+", 'D+'),
         ("D", 'D'),
-        ("D-", 'D-'),
+        ("AB", 'AB'),
         ("F", 'F'),
     )
     assignCourse = models.ForeignKey(
@@ -186,7 +201,7 @@ class CourseResult(models.Model):
         if not self.student in self.assignCourse.student.all():
             raise ValueError("Student not registered in this course")
         currentTime = timezone.now()
-        if self.pk:
+        if self.pk: # Update time
             obj = CourseResult.objects.get(pk=self.pk)
             if obj.midLock and obj.midMark != self.midMark:
                 raise ValueError("Sorry you can't change Mid term result")
@@ -202,7 +217,27 @@ class CourseResult(models.Model):
                 self.finalLastEditDate = currentTime
             if obj.finalMark and self.finalMark and obj.finalMark != self.finalMark:
                 self.finalLastEditDate = currentTime
-        else:
+            gradeValue = 0
+            if self.grade == 'A+':
+                gradeValue = 4
+            if self.grade == 'A':
+                gradeValue = 3.75
+            if self.grade == 'A-':
+                gradeValue = 3.5
+            if self.grade == 'B+':
+                gradeValue = 3.25
+            if self.grade == 'B':
+                gradeValue = 3
+            if self.grade == 'B-':
+                gradeValue = 2.75
+            if self.grade == 'C+':
+                gradeValue = 2.5
+            if self.grade == 'C':
+                gradeValue = 2.25
+            if self.grade == 'C-':
+                gradeValue = 2
+            self.gradePoint = gradeValue * self.creditHours
+        else: #creation time
             if self.finalMark:
                 raise ValueError("Sorry you can't assign final exam marks before mid terms")
             if self.midMark:
@@ -212,20 +247,47 @@ class CourseResult(models.Model):
 
 
 class SemResult(models.Model):
-    semester = models.ForeignKey(Semester, on_delete=models.PROTECT)
-    session = models.ForeignKey(Session, on_delete=models.PROTECT)
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    semester = models.ForeignKey(Semester, on_delete=models.PROTECT, blank=True, null=True)
+    session = models.ForeignKey(Session, on_delete=models.PROTECT, blank=True, null=True)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, blank=True, null=True)
     totalCredit = models.FloatField(
         verbose_name='Total Credit', blank=True, null=True)
     earnedCredit = models.FloatField(
         verbose_name='Earned Credit', blank=True, null=True)
     sgpa = models.FloatField(verbose_name='SGPA', blank=True, null=True)
-    date = models.DateTimeField(auto_now_add=True)
+    date = models.DateTimeField(blank=True, null=True)
     lastEditDate = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = (('semester', 'session', 'student'),)
+        constraints = [
+            models.UniqueConstraint(
+                # conditions=Q(is_active=True),
+                fields=['semester', 'session', 'student'],
+                name="unique_semisterResult"
+            )
+        ]
 
     def __str__(self):
-        return f"{self.assignCourse.course} {self.student} {self.attend} {self.date}"
+        return f"{self.semester} {self.session} {self.student}"
+    
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.date = timezone.now()
+        print("*************  block  *************\n \n")
+        courseResults = CourseResult.objects.filter(student=self.student, assignCourse__semester=self.semester, assignCourse__session=self.session)
+        totalCredit = 0
+        earnedCredit = 0
+        totallPoint = 0
+        if len(courseResults):
+            for result in courseResults:
+                totalCredit += result.creditHours
+                if not result.grade == 'F':
+                    earnedCredit += result.creditHours
+                totallPoint += result.gradePoint
+        self.totalCredit = totalCredit
+        self.earnedCredit = earnedCredit
+        self.sgpa = totallPoint / totalCredit
+        print(f"totall credit= {totalCredit} //// earned credit= {earnedCredit} /// totall point = {totallPoint}")
+        print("\n \n*************  end  *************")
+        super(SemResult, self).save(*args, **kwargs)
 
