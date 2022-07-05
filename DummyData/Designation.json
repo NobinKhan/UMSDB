@@ -1,0 +1,25 @@
+[{
+    "model": "core.designation",
+    "pk": 1,
+    "fields": {
+        "name": "Student"
+    }
+}, {
+    "model": "core.designation",
+    "pk": 2,
+    "fields": {
+        "name": "HoD"
+    }
+}, {
+    "model": "core.designation",
+    "pk": 3,
+    "fields": {
+        "name": "Lecturer"
+    }
+}, {
+    "model": "core.designation",
+    "pk": 4,
+    "fields": {
+        "name": "Registrar"
+    }
+}]

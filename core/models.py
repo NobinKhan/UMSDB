@@ -1,15 +1,52 @@
 from django.db import models
 from django.apps import apps
 from django.contrib import auth
-from django.contrib.auth.hashers import make_password
-from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
-from django.contrib.auth.models import PermissionsMixin
 from django.utils import timezone
+from django.core.mail import send_mail
 from django_countries.fields import CountryField
 from django.core.validators import RegexValidator
+from django.contrib.auth.hashers import make_password
 from django.utils.translation import gettext_lazy as _
-from django.core.mail import send_mail
+from django.contrib.auth.models import PermissionsMixin
+from layouts.models import Session, Semester, Department, Program
 from django.contrib.auth.validators import UnicodeUsernameValidator
+from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
+
+
+def userDirectoryPath(instance, filename):
+    # file will be uploaded to MEDIA_ROOT / user_<id>/<filename>
+    return 'user_{0}/{1}'.format(instance.user.id, filename)
+
+
+# designationChoices = [
+#         ('HoD', 'HoD'),
+#         ('Co-ordinator', 'Co-ordinator'),
+#         ('AssosiateProfessor', 'AssosiateProfessor'),
+#         ('AssistantProfessor', 'AssistantProfessor'),
+#         ('Professor', 'Professor'),
+#         ('Lecturer', 'Lecturer'),
+#         ('SeniorLecturer', 'SeniorLecturer'),
+#         ('Accountant', 'Accountant'),
+#         ('Registrar', 'Registrar'),
+#     ]
+
+class Nationality(models.Model):
+    name = models.CharField(
+        verbose_name='Nationality', max_length=50, blank=True, null=True)
+
+    def __str__(self):
+        if not self.name:
+            return ''
+        return str(self.name)
+
+
+class Designation(models.Model):
+    name = models.CharField(max_length=50, null=True, blank=True)
+
+    def __str__(self):
+        if not self.name:
+            return ''
+        return str(self.name)
 
 
 class UserManager(BaseUserManager):
@@ -76,15 +113,6 @@ class UserManager(BaseUserManager):
         return self.none()
 
 
-class Nationality(models.Model):
-    name = models.CharField(
-        verbose_name='Nationality', max_length=50, blank=True, null=True)
-
-    def __str__(self):
-        return str(self.name)
-
-
-
 class User(AbstractBaseUser, PermissionsMixin):
     """
     An abstract base class implementing a fully featured User model with
@@ -100,6 +128,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         ('Other', 'Other'),
     ]
 
+    # Personal Information ######
     username = models.CharField(
         _('username'),
         max_length=150,
@@ -113,8 +142,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         null=True,
         blank=True
     )
-    first_name = models.CharField(_('first name'), max_length=150, blank=True)
-    last_name = models.CharField(_('last name'), max_length=150, blank=True)
+
     email = models.EmailField(_('email address'), unique=True)
     date_of_birth = models.DateField(verbose_name=_("Date of birth"))
     gender = models.CharField(
@@ -122,6 +150,254 @@ class User(AbstractBaseUser, PermissionsMixin):
         choices=genderChoices,
         default='Male',
     )
+
+    
+    is_active = models.BooleanField(
+        _('active'),
+        default=True,
+        help_text=_(
+            'Designates whether this user should be treated as active. '
+            'Unselect this instead of deleting accounts.'
+        ),
+    )
+    date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
+    joinedSession = models.ForeignKey(
+        Session, on_delete=models.PROTECT, blank=True, null=True)
+
+    # Role Information ######
+
+    # student Information
+    isStudent = models.BooleanField(
+        default=False, null=True, blank=True
+    )
+    typeChoices = [
+        ('New', 'New'),
+        ('TC', 'TC'),
+    ]
+    studentAddmissionType = models.CharField(
+        verbose_name='Addmission Type',
+        max_length=5,
+        choices=typeChoices,
+        null=True,
+        blank=True,
+    )
+    program = models.ForeignKey(
+        Program, 
+        on_delete=models.PROTECT,
+        blank=True, 
+        null=True
+    )
+    joinedSemester = models.ForeignKey(
+        Semester, on_delete=models.PROTECT, blank=True, null=True)
+
+
+    # teacher Information
+    isTeacher = models.BooleanField(
+        default=False, null=True, blank=True
+    )
+    department = models.ForeignKey(Department, on_delete=models.PROTECT, blank=True, null=True)
+    
+    designation = models.ForeignKey(Designation, on_delete=models.PROTECT, null=True, blank=True)
+
+    # Staff information
+    is_staff = models.BooleanField(
+        _('staff status'),
+        default=False,
+        help_text=_(
+            'Designates whether the user can do which operation'),
+    )
+
+    objects = UserManager()
+
+    EMAIL_FIELD = 'email'
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['date_of_birth', 'email']
+
+    # class Meta:
+    #     verbose_name = _('user')
+    #     verbose_name_plural = _('users')
+    #     abstract = True
+
+    def clean(self):
+        super().clean()
+        self.email = self.__class__.objects.normalize_email(self.email)
+
+    def __str__(self):
+        return str(self.email)
+    
+    def save(self, *args, **kwargs):
+        # Save the provided password in hashed format
+        # user = super(User, self).save(*args, **kwargs)
+        # user.set_password()
+        if not self.joinedSession:
+            raise ValueError("Joined session data not provided")
+        if self.isStudent:
+            if self.isTeacher or self.is_staff:
+                raise ValueError("User can't be both student, teacher or staff")
+            self.department = None
+            if self.username:
+                check = User.objects.get(pk=self.id)
+                if check.program != self.program or check.studentAddmissionType != self.studentAddmissionType:
+                    self.username = None
+            if not self.username:
+                yearLastTwoDigit = str(self.joinedSession)[2:]
+                semesterNumber = str(self.joinedSemester.num)
+                program = ('0' + str(self.program.num)
+                        ) if self.program.num < 10 else str(self.program.num)
+                type = '1' if self.studentAddmissionType == 'New' else '7'
+                obj = User.objects.filter(isStudent=True,username__contains=yearLastTwoDigit+semesterNumber+program+type).last()
+                lastSerial = 0 if not obj else int(str(obj.username)[-3:])
+                if lastSerial+1 < 10:
+                    serial = '00' + str(lastSerial+1)
+                elif lastSerial+1 < 100:
+                    serial = '0' + str(lastSerial+1)
+                else:
+                    serial = str(lastSerial+1)
+
+                self.username = int(yearLastTwoDigit + semesterNumber +
+                            program + type + serial)
+        
+        if self.isTeacher:
+            if self.isStudent or self.is_staff:
+                raise ValueError("User can't be both student, teacher or staff")
+            self.joinedSemester = None
+            self.program = None
+            self.studentAddmissionType = None
+            if self.username:
+                check = User.objects.get(pk=self.id)
+                if check.department != self.department:
+                        self.username = None
+            if not self.username:
+                staffNumber = '11'
+                department = ('0' + str(self.department.num)
+                            ) if self.department.num < 10 else str(self.department.num)
+                obj = User.objects.filter(isTeacher=True, username__contains=staffNumber+department).last()
+                lastSerial = 0 if not obj else int(str(obj.username)[-3:])
+                if lastSerial+1 < 10:
+                    serial = '00' + str(lastSerial+1)
+                elif lastSerial+1 < 100:
+                    serial = '0' + str(lastSerial+1)
+                else:
+                    serial = str(lastSerial+1)
+                self.username = int(staffNumber + department + serial)
+        
+        if self.is_staff:
+            if self.isStudent or self.isTeacher:
+                raise ValueError("User can't be both student, teacher or staff")
+            if not self.username:
+                staffNumber = '77'
+                obj = User.objects.filter(is_staff=True, username__contains=staffNumber).last()
+                lastSerial = 0 if not obj else int(str(obj.username)[-4:])
+                if lastSerial+1 < 10:
+                    serial = '000' + str(lastSerial+1)
+                elif lastSerial+1 < 100:
+                    serial = '00' + str(lastSerial+1)
+                elif lastSerial+1 < 1000:
+                    serial = '0' + str(lastSerial+1)
+                else:
+                    serial = str(lastSerial+1)
+                self.username = int(staffNumber + serial)
+        super(User, self).save(*args, **kwargs)
+
+        # return user
+    # def email_user(self, subject, message, from_email=None, **kwargs):
+    #     """Send an email to this user."""
+    #     send_mail(subject, message, from_email, [self.email], **kwargs)
+
+
+class PreviousEducation(models.Model):
+    user = models.OneToOneField(User, on_delete=models.PROTECT)
+        # Previous Education (Academic Information)
+    # SSC Section
+    ssceqChoices = [
+        ('ssc', 'SSC'),
+        ('olevel', 'O Level'),
+        ('igcse', 'IGCSE'),
+        ('dakhil', 'Dakhil (Madrasha Education Board)'),
+        ('vssc', 'Vocational SSC (Technical Education Board)'),
+        ('other', 'Other'),
+    ]
+    ssceq = models.CharField(
+        verbose_name='SSC or Equivalent',
+        max_length=250,
+        choices=ssceqChoices,
+        default='ssc',
+        blank=True, null=True,
+    )
+    sscGpa = models.FloatField(verbose_name='SSC GPA', blank=True, null=True)
+    sscYear = models.SmallIntegerField(
+        verbose_name='SSC Year', blank=True, null=True)
+    sscFile = models.FileField(
+        verbose_name='SSC Certificate/Transcript', upload_to=userDirectoryPath, blank=True, null=True)
+
+    # HSC Section
+    hsceqChoices = [
+        ('hsc', 'HSC'),
+        ('alevel', 'A Level'),
+        ('alim', 'Alim (Madrasha Education Board)'),
+        ('vhsc', 'Vocational HSC (Technical Education Board)'),
+        ('dbs', 'Diploma In Bussiness studies'),
+        ('other', 'Other'),
+    ]
+    hsceq = models.CharField(
+        verbose_name='HSC or Equivalent',
+        max_length=250,
+        choices=hsceqChoices,
+        default='hsc',
+        blank=True, null=True,
+    )
+    hscGpa = models.FloatField(verbose_name='hsc GPA', blank=True, null=True)
+    hscYear = models.SmallIntegerField(
+        verbose_name='hsc Year', blank=True, null=True)
+    hscfile = models.FileField(
+        verbose_name='HSC Certificate/Transcript', upload_to=userDirectoryPath, blank=True, null=True)
+
+    # Bachelor Section
+    bachelor = models.CharField(
+        verbose_name='Bachelor', max_length=150, blank=True)
+    institute = models.CharField(
+        verbose_name='Institute/University', max_length=150, blank=True)
+    bachelorGpa = models.FloatField(
+        verbose_name='GPA/Result', blank=True, null=True)
+    bachelorYear = models.SmallIntegerField(
+        verbose_name='Passing Year', blank=True, null=True)
+    bachelorFile = models.FileField(
+        verbose_name='Certificate/Transcript', upload_to=userDirectoryPath, blank=True, null=True)
+
+    # Master Section
+    master = models.CharField(
+        verbose_name='Master', max_length=150, blank=True)
+    institute = models.CharField(
+        verbose_name='Institute/University', max_length=150, blank=True)
+    masterGpa = models.FloatField(
+        verbose_name='GPA/Result', blank=True, null=True)
+    masterYear = models.SmallIntegerField(
+        verbose_name='Passing Year', blank=True, null=True)
+    masterFile = models.FileField(
+        verbose_name='Certificate/Transcript', upload_to=userDirectoryPath, blank=True, null=True)
+
+    # Phd Degree Section
+    phd = models.CharField(
+        verbose_name='Phd Degree', max_length=150, blank=True)
+    institute = models.CharField(
+        verbose_name='Institute/University', max_length=150, blank=True)
+    phdGpa = models.FloatField(
+        verbose_name='GPA/Result', blank=True, null=True)
+    phdYear = models.SmallIntegerField(
+        verbose_name='Passing Year', blank=True, null=True)
+    phdFile = models.FileField(
+        verbose_name='Certificate/Transcript', upload_to=userDirectoryPath, blank=True, null=True)
+
+    def __str__(self):
+        if not self.user:
+            return ''
+        return self.user.__str__() 
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.PROTECT)
+    first_name = models.CharField(_('first name'), max_length=150, blank=True)
+    last_name = models.CharField(_('last name'), max_length=150, blank=True)
     permanentAddress = models.CharField(verbose_name=_(
         "Parmanent Address"), max_length=1024, null=True)
     presentAddress = models.CharField(verbose_name=_(
@@ -142,44 +418,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     motherName = models.CharField(_('Mother Name'), max_length=150, blank=True)
     photo = models.ImageField(verbose_name=_(
         "Photo"), upload_to='photos/', default='photos/default-user-avatar.png')
-    is_staff = models.BooleanField(
-        _('staff status'),
-        default=False,
-        help_text=_(
-            'Designates whether the user can log into this admin site.'),
-    )
-    is_active = models.BooleanField(
-        _('active'),
-        default=True,
-        help_text=_(
-            'Designates whether this user should be treated as active. '
-            'Unselect this instead of deleting accounts.'
-        ),
-    )
-    date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
 
-    objects = UserManager()
+    def __str__(self):
+        if not self.user:
+            return ''
+        return self.user.__str__() 
 
-    EMAIL_FIELD = 'email'
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['date_of_birth']
 
-    # class Meta:
-    #     verbose_name = _('user')
-    #     verbose_name_plural = _('users')
-    #     abstract = True
 
-    def clean(self):
-        super().clean()
-        self.email = self.__class__.objects.normalize_email(self.email)
-
-    # def save(self, commit=True):
-    #     # Save the provided password in hashed format
-    #     user = super().save(commit=False)
-    #     user.set_password(self.cleaned_data["password1"])
-    #     if commit:
-    #         user.save()
-    #     return user
-    # def email_user(self, subject, message, from_email=None, **kwargs):
-    #     """Send an email to this user."""
-    #     send_mail(subject, message, from_email, [self.email], **kwargs)
