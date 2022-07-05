@@ -1,8 +1,7 @@
 from django.db import models
-from teacher.models import Teacher
-from student.models import Student
-from layouts.models import Program, Semester, Session, Department
+from django.conf import settings
 from django.utils import timezone
+from layouts.models import Program, Semester, Session, Department
 # Create your models here.
 
 
@@ -72,8 +71,8 @@ class AssignCourse(models.Model):
     semester = models.ForeignKey(Semester, on_delete=models.PROTECT)
     session = models.ForeignKey(Session, on_delete=models.PROTECT)
     course = models.ForeignKey(Course, on_delete=models.PROTECT)
-    teacher = models.ForeignKey(Teacher, on_delete=models.PROTECT)
-    student = models.ManyToManyField(Student, through='RetakeCourse', blank=True)
+    teacher = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,related_name="Teacher",)
+    student = models.ManyToManyField(settings.AUTH_USER_MODEL, through='RetakeCourse', blank=True)
 
     class Meta:
         constraints = [
@@ -89,7 +88,7 @@ class AssignCourse(models.Model):
 
 class RetakeCourse(models.Model):
     assignCourse = models.ForeignKey(AssignCourse, on_delete=models.PROTECT)
-    student = models.ForeignKey(Student, on_delete=models.PROTECT)
+    student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     retake = models.BooleanField(default=False)
 
     class Meta:
@@ -109,7 +108,7 @@ class Attendance(models.Model):
         AssignCourse, on_delete=models.PROTECT, blank=True, null=True)
     attendenceDate = models.DateField(blank=True, null=True)
     shedule = models.ForeignKey(Shedule, on_delete=models.PROTECT)
-    student = models.ManyToManyField(Student, through='AttendanceStatus')
+    student = models.ManyToManyField(settings.AUTH_USER_MODEL, through='AttendanceStatus')
 
     class Meta:
         constraints = [
@@ -131,7 +130,7 @@ class AttendanceStatus(models.Model):
     ("AbsentOnLeave", 'AbsentOnLeave'),
     )
     attendance = models.ForeignKey(Attendance, on_delete=models.PROTECT)
-    student = models.ForeignKey(Student, on_delete=models.PROTECT)
+    student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     status = models.CharField(max_length=15, choices=attendanceChoices)
     class Meta:
         verbose_name = "Attendance Status"
@@ -163,7 +162,7 @@ class CourseResult(models.Model):
     )
     assignCourse = models.ForeignKey(
         AssignCourse, on_delete=models.PROTECT, blank=True, null=True)
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     creditHours = models.FloatField(
         verbose_name='Credit Hours', blank=True, null=True)
     
@@ -199,7 +198,7 @@ class CourseResult(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.student in self.assignCourse.student.all():
-            raise ValueError("Student not registered in this course")
+            raise ValueError("settings.AUTH_USER_MODEL not registered in this course")
         currentTime = timezone.now()
         if self.pk: # Update time
             obj = CourseResult.objects.get(pk=self.pk)
@@ -249,7 +248,7 @@ class CourseResult(models.Model):
 class SemResult(models.Model):
     semester = models.ForeignKey(Semester, on_delete=models.PROTECT, blank=True, null=True)
     session = models.ForeignKey(Session, on_delete=models.PROTECT, blank=True, null=True)
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, blank=True, null=True)
+    student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True)
     totalCredit = models.FloatField(
         verbose_name='Total Credit', blank=True, null=True)
     earnedCredit = models.FloatField(

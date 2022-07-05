@@ -13,6 +13,8 @@ class Department(models.Model):
             )
         ]
     def __str__(self):
+        if not self.name:
+            return ''
         return str(self.name)
 
 
@@ -37,6 +39,8 @@ class Semester(models.Model):
             )
         ]
     def __str__(self):
+        if not self.name:
+            return ''
         return str(self.name)
 
 
@@ -111,6 +115,8 @@ class Program(models.Model):
             )
         ]
     def __str__(self):
+        if not self.name:
+            return ''
         return str(self.name)
 
 
@@ -118,4 +124,6 @@ class Session(models.Model):
     year = models.SmallIntegerField(unique=True)
 
     def __str__(self):
+        if not self.year:
+            return ''
         return str(self.year)
