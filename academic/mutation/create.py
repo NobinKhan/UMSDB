@@ -1,8 +1,6 @@
 from graphene import String, Mutation, Field, Int, ID, List, InputObjectType, Time, Date, Float
 from functions.handle_error import get_object_or_None
 from academic.models import Course, AssignCourse, Period, Shedule, Attendance, CourseResult, SemResult, AttendanceStatus
-from teacher.models import Teacher
-from student.models import Student
 from layouts.models import Program, Department, Semester, Session
 from academic.type import CourseType, AssignCourseType, PeriodType, SheduleType, AttendanceType, CourseResultType, SemResultType, AttendanceStatusType
 
