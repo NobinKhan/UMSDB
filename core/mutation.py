@@ -1,8 +1,9 @@
 from django.contrib.auth.models import Group
-from graphene import InputObjectType, String, Mutation, Field, Date, Int, ObjectType, Float, ID
 from functions.handle_error import get_object_or_None
-from .type import UserType, GroupType, NationalityType
-from .models import User, Nationality
+from layouts.models import Semester, Session, Program, Department
+from .models import User, Nationality, Designation, Profile, PreviousEducation
+from graphene import InputObjectType, String, Mutation, Field, Date, Int, ObjectType, Float, ID
+from .type import UserType, GroupType, NationalityType, ProfileType, DesignationType, PreviousEducationType
 # import graphql_jwt
 
 
@@ -33,17 +34,29 @@ class UpdateNationality(Mutation):
         return UpdateNationality(message="Failed - Object Not found")
 
 
-class DeleteNationality(Mutation):
+class CreateDesignation(Mutation):
+    class Arguments:
+        name = String(required=True)
+    designation = Field(DesignationType)
+    def mutate(root, info, name):
+        newDesignation = Designation(name = name)
+        newDesignation.save()
+        return CreateDesignation(designation=newDesignation)
+
+
+class UpdateDesignation(Mutation):
     class Arguments:
         id = ID(required=True)
+        name = String(required=True)
+    designation = Field(DesignationType)
     message = String()
-    def mutate(root, info, id):
-        oldNationality = get_object_or_None(Nationality, pk=id)
-        if oldNationality:
-            oldNationality.delete()
-            return DeleteNationality(message="Succes")
-        return DeleteNationality(message="Failed - Object Not found")
-
+    def mutate(root, info, name, id):
+        oldDesignation = get_object_or_None(Designation, pk=id)
+        if oldDesignation:
+            oldDesignation.name = name
+            oldDesignation.save()
+            return UpdateDesignation(designation=oldDesignation)
+        return UpdateDesignation(message="Failed - Object Not found")
 
 
 class CreateGroup(Mutation):
@@ -56,85 +69,47 @@ class CreateGroup(Mutation):
         return CreateGroup(group=newGroup)
 
 
-# class UpdateGroup(Mutation):
-#     class Arguments:
-#         id = ID(required=True)
-#         name = String(required=True)
-#     group = Field(GroupType)
-#     message = String()
-#     def mutate(root, info, name, id):
-#         oldGroup = get_object_or_None(Group, pk=id)
-#         if oldGroup:
-#             oldGroup.name = name
-#             oldGroup.save()
-#             return UpdateGroup(group=oldGroup)
-#         return UpdateGroup(message="Failed - Object Not found")
-
-
-# class DeleteGroup(Mutation):
-#     class Arguments:
-#         id = ID(required=True)
-#     message = String()
-#     def mutate(root, info, id):
-#         oldGroup = get_object_or_None(Group, pk=id)
-#         if oldGroup:
-#             oldGroup.delete()
-#             return DeleteGroup(message="Succes")
-#         return DeleteGroup(message="Failed - Object Not found")
-
-
-class CreateUserInput(InputObjectType):
-    userName = String(required=True)
-    firstName = String(required=True)
-    lastName = String(required=True)
+class CreateStudentInput(InputObjectType):
     email = String(required=True)
     dateOfBirth = Date(required=True)
     gender = String(required=True)
-    permanentAddress = String(required=True)
-    presentAddress = String(required=True)
-    mobilePhone = String(required=True)
-    mobilePhone2 = String()
-    nid = Float()
-    birthCertNumber = Float(required=True)
-    nationality = ID(required=True)
-    fatherName = String(required=True)
-    motherName = String(required=True)
-    photo = String(required=True)
+    joiningSessionID = ID(required=True)
+    designationID = ID(required=True)
+    studentType = String(required=True)
+    programID = ID(required=True)
+    joiningSemesterID = ID(required=True)
     password = String(required=True)
-    group = String(required=True)
+    groupID = ID(required=True)
 
 
-class CreateUser(Mutation):
+class CreateStudent(Mutation):
     class Arguments:
-        data = CreateUserInput()
-    user = Field(UserType)
+        data = CreateStudentInput()
+    student = Field(UserType)
     def mutate(root, info, data=None):
-        nationalityInstance = get_object_or_None(Nationality, pk=data.nationality)
-        newUser = User(
-            username = data.userName,
-            first_name = data.firstName,
-            last_name = data.lastName,
-            email = data.email,
-            date_of_birth = data.dateOfBirth,
-            gender = data.gender,
-            permanentAddress = data.permanentAddress,
-            presentAddress = data.presentAddress,
-            mobilePhone = data.mobilePhone,
-            mobilePhone2 = data.mobilePhone2,
-            nid = data.nid,
-            birthCertNumber = data.birthCertNumber,
-            nationality = nationalityInstance,
-            fatherName = data.fatherName,
-            motherName = data.motherName,
-            photo = data.photo,
-        )
-        newUser.set_password(data.password)
-        newUser.save()
-        userGroup = get_object_or_None(Group, name=data.group)
-        grp = Group.objects.filter(user = newUser)
-        if userGroup and not grp:
-            newUser.groups.add(userGroup)
-        return CreateUser(user=newUser)
+        sessionInstance = get_object_or_None(Session, pk=data.joiningSessionID)
+        programInstance = get_object_or_None(Program, pk=data.programID)
+        semesterInstance = get_object_or_None(Semester, pk=data.joiningSemesterID)
+        designationInstance = get_object_or_None(Designation, pk=data.designationID)
+        if sessionInstance and programInstance and semesterInstance and designationInstance:
+            newStudent = User(
+                email = data.email,
+                date_of_birth = data.dateOfBirth,
+                gender = data.gender,
+                joinedSession= sessionInstance,
+                isStudent=True,
+                studentAddmissionType=data.studentType,
+                program=programInstance,
+                joinedSemester=semesterInstance,
+                designation=designationInstance,
+            )
+            newStudent.set_password(data.password)
+            newStudent.save()
+            userGroup = get_object_or_None(Group, pk=data.groupID)
+            grp = Group.objects.filter(user = newStudent)
+            if userGroup and not grp:
+                newStudent.groups.add(userGroup)
+            return CreateStudent(student=newStudent)
 
 
 class UpdateUserInput(InputObjectType):
@@ -226,14 +201,85 @@ class DeleteUser(Mutation):
         return DeleteUser(message="Failed - Object Not found")
 
 
+class CreateProfileInput(InputObjectType):
+    firstName = String(required=True)
+    lastName = String(required=True)
+    permanentAddress = String(required=True)
+    presentAddress = String(required=True)
+    mobilePhone = String(required=True)
+    mobilePhone2 = String()
+    nid = Float()
+    birthCertNumber = Float(required=True)
+    nationality = ID(required=True)
+    fatherName = String(required=True)
+    motherName = String(required=True)
+    photo = String(required=True)
+
+
 class Mutation(ObjectType):
+  createNationality = CreateNationality.Field()
+  updateNationality = UpdateNationality.Field()
+  createDesignation = CreateDesignation.Field()
+  createGroup = CreateGroup.Field()
+  createStudent = CreateStudent.Field()
+  updateUser = UpdateUser.Field()
+  deleteUser = DeleteUser.Field()
+
+
 #   token_auth = graphql_jwt.ObtainJSONWebToken.Field()
 #   verify_token = graphql_jwt.Verify.Field()
 #   refresh_token = graphql_jwt.Refresh.Field()
-  createNationality = CreateNationality.Field()
-  updateNationality = UpdateNationality.Field()
-  deleteNationality = DeleteNationality.Field()
-  createGroup = CreateGroup.Field()
-  createUser = CreateUser.Field()
-  updateUser = UpdateUser.Field()
-  deleteUser = DeleteUser.Field()
+
+        # username = data.userName,
+        # first_name = data.firstName,
+        # last_name = data.lastName,
+        # permanentAddress = data.permanentAddress,
+        # presentAddress = data.presentAddress,
+        # mobilePhone = data.mobilePhone,
+        # mobilePhone2 = data.mobilePhone2,
+        # nid = data.nid,
+        # birthCertNumber = data.birthCertNumber,
+        # nationality = nationalityInstance,
+        # fatherName = data.fatherName,
+        # motherName = data.motherName,
+        # photo = data.photo,
+
+
+
+# class DeleteNationality(Mutation):
+#     class Arguments:
+#         id = ID(required=True)
+#     message = String()
+#     def mutate(root, info, id):
+#         oldNationality = get_object_or_None(Nationality, pk=id)
+#         if oldNationality:
+#             oldNationality.delete()
+#             return DeleteNationality(message="Succes")
+#         return DeleteNationality(message="Failed - Object Not found")
+
+
+# class UpdateGroup(Mutation):
+#     class Arguments:
+#         id = ID(required=True)
+#         name = String(required=True)
+#     group = Field(GroupType)
+#     message = String()
+#     def mutate(root, info, name, id):
+#         oldGroup = get_object_or_None(Group, pk=id)
+#         if oldGroup:
+#             oldGroup.name = name
+#             oldGroup.save()
+#             return UpdateGroup(group=oldGroup)
+#         return UpdateGroup(message="Failed - Object Not found")
+
+
+# class DeleteGroup(Mutation):
+#     class Arguments:
+#         id = ID(required=True)
+#     message = String()
+#     def mutate(root, info, id):
+#         oldGroup = get_object_or_None(Group, pk=id)
+#         if oldGroup:
+#             oldGroup.delete()
+#             return DeleteGroup(message="Succes")
+#         return DeleteGroup(message="Failed - Object Not found")
