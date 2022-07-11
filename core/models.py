@@ -284,6 +284,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         if self.is_staff:
             if self.isStudent or self.isTeacher:
                 raise ValueError("User can't be both student, teacher or staff")
+            self.joinedSemester = None
+            self.program = None
+            self.studentAddmissionType = None
             if not self.username:
                 staffNumber = '77'
                 obj = User.objects.filter(is_staff=True, username__contains=staffNumber).last()
