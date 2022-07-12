@@ -150,6 +150,41 @@ class CreateTeacher(Mutation):
             return CreateTeacher(teacher=newTeacher)
 
 
+class CreateStaffInput(InputObjectType):
+    email = String(required=True)
+    dateOfBirth = Date(required=True)
+    gender = String(required=True)
+    joiningSessionID = ID(required=True)
+    designationID = ID(required=True)
+    password = String(required=True)
+    groupID = ID(required=True)
+
+
+class CreateStaff(Mutation):
+    class Arguments:
+        data = CreateStaffInput()
+    staff = Field(UserType)
+    def mutate(root, info, data=None):
+        sessionInstance = get_object_or_None(Session, pk=data.joiningSessionID)
+        designationInstance = get_object_or_None(Designation, pk=data.designationID)
+        if sessionInstance and designationInstance:
+            newStaff = User(
+                email = data.email,
+                date_of_birth = data.dateOfBirth,
+                gender = data.gender,
+                joinedSession= sessionInstance,
+                is_staff=True,
+                designation=designationInstance,
+            )
+            newStaff.set_password(data.password)
+            newStaff.save()
+            userGroup = get_object_or_None(Group, pk=data.groupID)
+            grp = Group.objects.filter(user = newStaff)
+            if userGroup and not grp:
+                newStaff.groups.add(userGroup)
+            return CreateStaff(staff=newStaff)
+
+
 class UpdateUserInput(InputObjectType):
     id = ID(required=True)
     userName = String()
@@ -261,6 +296,7 @@ class Mutation(ObjectType):
   createGroup = CreateGroup.Field()
   createStudent = CreateStudent.Field()
   createTeacher = CreateTeacher.Field()
+  createStaff = CreateStaff.Field()
   updateUser = UpdateUser.Field()
   deleteUser = DeleteUser.Field()
 
