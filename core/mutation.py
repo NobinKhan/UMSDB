@@ -185,6 +185,51 @@ class CreateStaff(Mutation):
             return CreateStaff(staff=newStaff)
 
 
+class CreateProfileInput(InputObjectType):
+    userID = ID(required=True)
+    firstName = String(required=True)
+    lastName = String(required=True)
+    permanentAddress = String(required=True)
+    presentAddress = String(required=True)
+    mobilePhone = String(required=True)
+    mobilePhone2 = String()
+    nid = Float()
+    birthCertNumber = Float(required=True)
+    nationalityID = ID(required=True)
+    fatherName = String(required=True)
+    motherName = String(required=True)
+    photo = String(required=True)
+
+
+class CreateProfile(Mutation):
+    class Arguments:
+        data = CreateProfileInput()
+    profile = Field(ProfileType)
+    def mutate(root, info, data=None):
+        Profile.phone_regex(data.mobilePhone)
+        Profile.phone_regex(data.mobilePhone2)
+        userInstance = get_object_or_None(User, pk=data.userID)
+        nationalityInstance = get_object_or_None(Nationality, pk=data.nationalityID)
+        if userInstance and nationalityInstance:
+            newProfile = Profile(
+                user=userInstance,
+                first_name = data.firstName,
+                last_name = data.lastName,
+                permanentAddress = data.permanentAddress,
+                presentAddress = data.presentAddress,
+                mobilePhone = data.mobilePhone,
+                mobilePhone2 = data.mobilePhone2,
+                nid = data.nid,
+                birthCertNumber = data.birthCertNumber,
+                nationality = nationalityInstance,
+                fatherName = data.fatherName,
+                motherName = data.motherName,
+                photo = data.photo,
+            )
+            newProfile.save()
+            return CreateProfile(profile=newProfile)
+
+
 class UpdateUserInput(InputObjectType):
     id = ID(required=True)
     userName = String()
@@ -274,21 +319,6 @@ class DeleteUser(Mutation):
         return DeleteUser(message="Failed - Object Not found")
 
 
-class CreateProfileInput(InputObjectType):
-    firstName = String(required=True)
-    lastName = String(required=True)
-    permanentAddress = String(required=True)
-    presentAddress = String(required=True)
-    mobilePhone = String(required=True)
-    mobilePhone2 = String()
-    nid = Float()
-    birthCertNumber = Float(required=True)
-    nationality = ID(required=True)
-    fatherName = String(required=True)
-    motherName = String(required=True)
-    photo = String(required=True)
-
-
 class Mutation(ObjectType):
   createNationality = CreateNationality.Field()
   updateNationality = UpdateNationality.Field()
@@ -297,6 +327,7 @@ class Mutation(ObjectType):
   createStudent = CreateStudent.Field()
   createTeacher = CreateTeacher.Field()
   createStaff = CreateStaff.Field()
+  createProfile = CreateProfile.Field()
   updateUser = UpdateUser.Field()
   deleteUser = DeleteUser.Field()
 
