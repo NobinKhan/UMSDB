@@ -313,18 +313,18 @@ class PreviousEducation(models.Model):
         # Previous Education (Academic Information)
     # SSC Section
     ssceqChoices = [
-        ('ssc', 'SSC'),
-        ('olevel', 'O Level'),
-        ('igcse', 'IGCSE'),
-        ('dakhil', 'Dakhil (Madrasha Education Board)'),
-        ('vssc', 'Vocational SSC (Technical Education Board)'),
-        ('other', 'Other'),
+        ('SSC', 'SSC'),
+        ('O Level', 'O Level'),
+        ('IGCSE', 'IGCSE'),
+        ('Dakhil (Madrasha Education Board)', 'Dakhil (Madrasha Education Board)'),
+        ('Vocational SSC (Technical Education Board)', 'Vocational SSC (Technical Education Board)'),
+        ('Other', 'Other'),
     ]
     ssceq = models.CharField(
         verbose_name='SSC or Equivalent',
-        max_length=250,
+        max_length=50,
         choices=ssceqChoices,
-        default='ssc',
+        default='SSC',
         blank=True, null=True,
     )
     sscGpa = models.FloatField(verbose_name='SSC GPA', blank=True, null=True)
@@ -335,18 +335,18 @@ class PreviousEducation(models.Model):
 
     # HSC Section
     hsceqChoices = [
-        ('hsc', 'HSC'),
-        ('alevel', 'A Level'),
-        ('alim', 'Alim (Madrasha Education Board)'),
-        ('vhsc', 'Vocational HSC (Technical Education Board)'),
-        ('dbs', 'Diploma In Bussiness studies'),
-        ('other', 'Other'),
+        ('HSC', 'HSC'),
+        ('A Level', 'A Level'),
+        ('Alim (Madrasha Education Board)', 'Alim (Madrasha Education Board)'),
+        ('Vocational HSC (Technical Education Board)', 'Vocational HSC (Technical Education Board)'),
+        ('Diploma In Bussiness studies', 'Diploma In Bussiness studies'),
+        ('Other', 'Other'),
     ]
     hsceq = models.CharField(
         verbose_name='HSC or Equivalent',
-        max_length=250,
+        max_length=50,
         choices=hsceqChoices,
-        default='hsc',
+        default='HSC',
         blank=True, null=True,
     )
     hscGpa = models.FloatField(verbose_name='hsc GPA', blank=True, null=True)
@@ -357,9 +357,9 @@ class PreviousEducation(models.Model):
 
     # Bachelor Section
     bachelor = models.CharField(
-        verbose_name='Bachelor', max_length=150, blank=True)
-    institute = models.CharField(
-        verbose_name='Institute/University', max_length=150, blank=True)
+        verbose_name='Bachelor', max_length=150, blank=True, null=True)
+    bscInstitute = models.CharField(
+        verbose_name='Institute/University', max_length=150, blank=True, null=True)
     bachelorGpa = models.FloatField(
         verbose_name='GPA/Result', blank=True, null=True)
     bachelorYear = models.SmallIntegerField(
@@ -369,9 +369,9 @@ class PreviousEducation(models.Model):
 
     # Master Section
     master = models.CharField(
-        verbose_name='Master', max_length=150, blank=True)
-    institute = models.CharField(
-        verbose_name='Institute/University', max_length=150, blank=True)
+        verbose_name='Master', max_length=150, blank=True, null=True)
+    mscInstitute = models.CharField(
+        verbose_name='Institute/University', max_length=150, blank=True, null=True)
     masterGpa = models.FloatField(
         verbose_name='GPA/Result', blank=True, null=True)
     masterYear = models.SmallIntegerField(
@@ -381,9 +381,9 @@ class PreviousEducation(models.Model):
 
     # Phd Degree Section
     phd = models.CharField(
-        verbose_name='Phd Degree', max_length=150, blank=True)
-    institute = models.CharField(
-        verbose_name='Institute/University', max_length=150, blank=True)
+        verbose_name='Phd Degree', max_length=150, blank=True, null=True)
+    phdInstitute = models.CharField(
+        verbose_name='Institute/University', max_length=150, blank=True, null=True)
     phdGpa = models.FloatField(
         verbose_name='GPA/Result', blank=True, null=True)
     phdYear = models.SmallIntegerField(
@@ -414,7 +414,7 @@ class Profile(models.Model):
         "Primary Phone"), max_length=17, blank=True, null=True)
     mobilePhone2 = models.CharField(validators=[phone_regex], verbose_name=_(
         "Secondary phone"), max_length=17, blank=True, null=True)
-    nid = models.PositiveBigIntegerField(unique=True, null=True)
+    nid = models.PositiveBigIntegerField(unique=True, null=True, blank=True)
     birthCertNumber = models.PositiveBigIntegerField(unique=True, null=True)
     nationality = models.ForeignKey(Nationality, blank=True, null=True,on_delete=models.PROTECT)
     fatherName = models.CharField(_('Father Name'), max_length=150, blank=True)
