@@ -229,7 +229,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         # Save the provided password in hashed format
         # user = super(User, self).save(*args, **kwargs)
         # user.set_password()
-        if not self.joinedSession:
+        if not self.joinedSession and not self.is_superuser:
             raise ValueError("Joined session data not provided")
         if self.isStudent:
             if self.isTeacher or self.is_staff:
