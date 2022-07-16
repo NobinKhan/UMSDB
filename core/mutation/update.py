@@ -54,7 +54,6 @@ class UpdateProfile(Mutation):
     class Arguments:
         data = UpdateProfileInput()
     profile = Field(ProfileType)
-    message = String()
     def mutate(root, info, data=None):
         nationalityInstance = get_object_or_None(Nationality, pk=data.nationality)
         oldProfile = get_object_or_None(Profile, pk=data.id)
@@ -68,8 +67,10 @@ class UpdateProfile(Mutation):
             if data.presentAddress:
                 oldProfile.presentAddress = data.presentAddress
             if data.mobilePhone:
+                Profile.phone_regex(data.mobilePhone)
                 oldProfile.mobilePhone = data.mobilePhone
             if data.mobilePhone2:
+                Profile.phone_regex(data.mobilePhone2)
                 oldProfile.mobilePhone2 = data.mobilePhone2
             if data.nid:
                 oldProfile.nid = data.nid
@@ -83,5 +84,5 @@ class UpdateProfile(Mutation):
                 oldProfile.motherName = data.motherName
             if data.photo:
                 oldProfile.photo = data.photo
-            return CreateProfile(profile=oldProfile)
+            return UpdateProfile(profile=oldProfile)
 
