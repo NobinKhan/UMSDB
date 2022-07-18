@@ -51,9 +51,9 @@ class UpdateStudentInput(InputObjectType):
 class UpdateStudent(Mutation):
     class Arguments:
         data = UpdateStudentInput()
-    student = Field(StudentType)
+    student = Field(UserType)
     def mutate(root, info, data=None):
-        oldStudent = get_object_or_None(Student, pk=data.id)
+        oldStudent = get_object_or_None(User, pk=data.id)
         if not oldStudent:
             return None
         if data.studentType and data.gender:
