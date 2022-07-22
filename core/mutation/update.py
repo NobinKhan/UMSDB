@@ -53,34 +53,32 @@ class UpdateStudent(Mutation):
         data = UpdateStudentInput()
     student = Field(UserType)
     def mutate(root, info, data=None):
-        oldStudent = get_object_or_None(User, pk=data.id)
+        oldStudent = get_object_or_None(User, pk=data.id, isStudent=True)
         if not oldStudent:
             return None
         if data.studentType and data.gender:
             if data.studentType in [d[0] for d in User.typeChoices] and data.gender in [d[0] for d in User.genderChoices]:
-                sessionInstance = get_object_or_None(Session, pk=data.joiningSessionID)
-                programInstance = get_object_or_None(Program, pk=data.programID)
-                semesterInstance = get_object_or_None(Semester, pk=data.joiningSemesterID)
-                designationInstance = get_object_or_None(Designation, pk=data.designationID)
+                oldStudent.gender = data.gender
+                oldStudent.studentAddmissionType = data.studentType
+        sessionInstance = get_object_or_None(Session, pk=data.joiningSessionID)
+        if sessionInstance:
+            oldStudent.joinedSession = sessionInstance
+        programInstance = get_object_or_None(Program, pk=data.programID)
+        if programInstance:
+            oldStudent.program = programInstance
+        semesterInstance = get_object_or_None(Semester, pk=data.joiningSemesterID)
+        if semesterInstance:
+            oldStudent.joinedSemester = semesterInstance
+        designationInstance = get_object_or_None(Designation, pk=data.designationID)
+        if designationInstance:
+            oldStudent.designation = designationInstance
         if data.email:
             oldStudent.email = data.email
         if data.dateOfBirth:
             oldStudent.date_of_birth = data.dateOfBirth
-        if data.gender:
-            oldStudent.gender = data.gender
-        if sessionInstance:
-            oldStudent.joinedSession = sessionInstance
-        if designationInstance:
-            oldStudent.designation = designationInstance
-        if data.studentType:
-            oldStudent.studentAddmissionType = data.studentType
-        if programInstance:
-            oldStudent.program = programInstance
-        if semesterInstance:
-            oldStudent.joinedSemester = semesterInstance
         if data.password:
             oldStudent.set_password(data.password)
-            oldStudent.save()
+        oldStudent.save()
         userGroup = get_object_or_None(Group, pk=data.groupID)
         grp = Group.objects.filter(user = oldStudent)
         if userGroup and not grp:
@@ -138,5 +136,6 @@ class UpdateProfile(Mutation):
                 oldProfile.motherName = data.motherName
             if data.photo:
                 oldProfile.photo = data.photo
+            oldProfile.save()
             return UpdateProfile(profile=oldProfile)
 
