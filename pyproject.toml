@@ -15,6 +15,7 @@ django-cors-headers = "^3.13.0"
 
 [tool.poetry.dev-dependencies]
 autopep8 = "^1.6.0"
+django-graphiql-debug-toolbar = "^0.2.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

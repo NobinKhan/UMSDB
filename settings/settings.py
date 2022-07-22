@@ -43,9 +43,12 @@ INSTALLED_APPS = [
     'core.apps.CoreConfig',
     'layouts.apps.LayoutsConfig',
     'academic.apps.AcademicConfig',
+    "debug_toolbar",
+    'graphiql_debug_toolbar',
 ]
 
 MIDDLEWARE = [
+    'graphiql_debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -143,4 +146,11 @@ MEDIA_ROOT = BASE_DIR / 'media'
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+]
+
+
+INTERNAL_IPS = [
+    # ...
+    "127.0.0.1",
+    # ...
 ]
