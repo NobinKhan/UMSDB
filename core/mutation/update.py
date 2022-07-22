@@ -86,6 +86,52 @@ class UpdateStudent(Mutation):
         return UpdateStudent(student=oldStudent)
 
 
+class UpdateTeacherInput(InputObjectType):
+    id = ID(required=True)
+    email = String()
+    dateOfBirth = Date()
+    gender = String()
+    joiningSessionID = ID()
+    designationID = ID()
+    departmentID = ID()
+    password = String()
+    groupID = ID()
+
+
+class UpdateTeacher(Mutation):
+    class Arguments:
+        data = UpdateTeacherInput()
+    teacher = Field(UserType)
+    def mutate(root, info, data=None):
+        oldTeacher = get_object_or_None(User, pk=data.id, isTeacher=True)
+        if not oldTeacher:
+            return None
+        if data.gender:
+            if data.gender in [d[0] for d in User.genderChoices]:
+                oldTeacher.gender = data.gender
+        sessionInstance = get_object_or_None(Session, pk=data.joiningSessionID)
+        if sessionInstance:
+            oldTeacher.joinedSession = sessionInstance
+        departmentInstance = get_object_or_None(Department, pk=data.departmentID)
+        if departmentInstance:
+            oldTeacher.department = departmentInstance
+        designationInstance = get_object_or_None(Designation, pk=data.designationID)
+        if designationInstance:
+            oldTeacher.designation = designationInstance
+        if data.email:
+            oldTeacher.email = data.email
+        if data.dateOfBirth:
+            oldTeacher.date_of_birth = data.dateOfBirth
+        if data.password:
+            oldTeacher.set_password(data.password)
+        oldTeacher.save()
+        userGroup = get_object_or_None(Group, pk=data.groupID)
+        grp = Group.objects.filter(user = oldTeacher)
+        if userGroup and not grp:
+            oldTeacher.groups.add(userGroup)
+        return UpdateTeacher(teacher=oldTeacher)
+
+
 class UpdateProfileInput(InputObjectType):
     id = ID(required=True)
     firstName = String()
