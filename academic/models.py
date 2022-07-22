@@ -168,7 +168,7 @@ class CourseResult(models.Model):
     
     midMark = models.FloatField(
         verbose_name='Midterm Mark', blank=True, null=True)
-    midAddDate = models.DateTimeField(blank=True, null=True)
+    midAddDate = models.DateTimeField(auto_now=True, blank=True, null=True)
     midLastEditDate = models.DateTimeField(blank=True, null=True)
     midLock = models.BooleanField(default=False)
     
@@ -199,23 +199,19 @@ class CourseResult(models.Model):
     def save(self, *args, **kwargs):
         if not self.student in self.assignCourse.student.all():
             raise ValueError("settings.AUTH_USER_MODEL not registered in this course")
-        currentTime = timezone.now()
         if self.pk: # Update time
             obj = CourseResult.objects.get(pk=self.pk)
             if obj.midLock and obj.midMark != self.midMark:
                 raise ValueError("Sorry you can't change Mid term result")
             if obj.finalLock and obj.finalMark != self.finalMark:
                 raise ValueError("Sorry you can't change final term result")
-            if not obj.midMark and self.midMark:
-                self.midAddDate = currentTime
-                self.midLastEditDate = currentTime
             if obj.midMark and self.midMark and obj.midMark != self.midMark:
-                self.midLastEditDate = currentTime
+                self.midLastEditDate = self.lastEditDate
             if not obj.finalMark and self.finalMark:
-                self.finalAddDate = currentTime
-                self.finalLastEditDate = currentTime
+                self.finalAddDate = self.lastEditDate
+                self.finalLastEditDate = self.lastEditDate
             if obj.finalMark and self.finalMark and obj.finalMark != self.finalMark:
-                self.finalLastEditDate = currentTime
+                self.finalLastEditDate = self.lastEditDate
             gradeValue = 0
             if self.grade == 'A+':
                 gradeValue = 4
@@ -239,9 +235,10 @@ class CourseResult(models.Model):
         else: #creation time
             if self.finalMark:
                 raise ValueError("Sorry you can't assign final exam marks before mid terms")
+            if not self.midMark:
+                raise ValueError("Sorry you have to assign mid term exam marks.")
             if self.midMark:
-                self.midAddDate = currentTime
-                self.midLastEditDate = currentTime
+                self.midLastEditDate = self.lastEditDate
         super(CourseResult, self).save(*args, **kwargs)
 
 
@@ -254,8 +251,8 @@ class SemResult(models.Model):
     earnedCredit = models.FloatField(
         verbose_name='Earned Credit', blank=True, null=True)
     sgpa = models.FloatField(verbose_name='SGPA', blank=True, null=True)
-    date = models.DateTimeField(blank=True, null=True)
-    lastEditDate = models.DateTimeField(auto_now_add=True)
+    date = models.DateTimeField(auto_now_add=True,blank=True, null=True)
+    lastEditDate = models.DateTimeField(auto_now=True)
 
     class Meta:
         constraints = [
@@ -270,9 +267,6 @@ class SemResult(models.Model):
         return f"{self.semester} {self.session} {self.student}"
     
     def save(self, *args, **kwargs):
-        if not self.id:
-            self.date = timezone.now()
-        print("*************  block  *************\n \n")
         courseResults = CourseResult.objects.filter(student=self.student, assignCourse__semester=self.semester, assignCourse__session=self.session)
         totalCredit = 0
         earnedCredit = 0
@@ -286,7 +280,5 @@ class SemResult(models.Model):
         self.totalCredit = totalCredit
         self.earnedCredit = earnedCredit
         self.sgpa = totallPoint / totalCredit
-        print(f"totall credit= {totalCredit} //// earned credit= {earnedCredit} /// totall point = {totallPoint}")
-        print("\n \n*************  end  *************")
         super(SemResult, self).save(*args, **kwargs)
 
