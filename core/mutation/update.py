@@ -132,6 +132,48 @@ class UpdateTeacher(Mutation):
         return UpdateTeacher(teacher=oldTeacher)
 
 
+class UpdateStaffInput(InputObjectType):
+    id = ID(required=True)
+    email = String()
+    dateOfBirth = Date()
+    gender = String()
+    joiningSessionID = ID()
+    designationID = ID()
+    password = String()
+    groupID = ID()
+
+
+class UpdateStaff(Mutation):
+    class Arguments:
+        data = UpdateStaffInput()
+    staff = Field(UserType)
+    def mutate(root, info, data=None):
+        oldStaff = get_object_or_None(User, pk=data.id, is_staff=True)
+        if not oldStaff:
+            return None
+        if data.gender:
+            if data.gender in [d[0] for d in User.genderChoices]:
+                oldStaff.gender = data.gender
+        sessionInstance = get_object_or_None(Session, pk=data.joiningSessionID)
+        if sessionInstance:
+            oldStaff.joinedSession = sessionInstance
+        designationInstance = get_object_or_None(Designation, pk=data.designationID)
+        if designationInstance:
+            oldStaff.designation = designationInstance
+        if data.email:
+            oldStaff.email = data.email
+        if data.dateOfBirth:
+            oldStaff.date_of_birth = data.dateOfBirth
+        if data.password:
+            oldStaff.set_password(data.password)
+        oldStaff.save()
+        userGroup = get_object_or_None(Group, pk=data.groupID)
+        grp = Group.objects.filter(user = oldStaff)
+        if userGroup and not grp:
+            oldStaff.groups.add(userGroup)
+        return UpdateStaff(staff=oldStaff)
+
+
 class UpdateProfileInput(InputObjectType):
     id = ID(required=True)
     firstName = String()
