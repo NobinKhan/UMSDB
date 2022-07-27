@@ -227,3 +227,89 @@ class UpdateProfile(Mutation):
             oldProfile.save()
             return UpdateProfile(profile=oldProfile)
 
+
+class UpdatePreviousEducationInput(InputObjectType):
+    id = ID(required=True)
+    userID = ID(required=True)
+    sscName = String()
+    sscGpa = Float()
+    sscYear = Int()
+    sscCertFile = String()
+    hscName = String()
+    hscGpa = Float()
+    hscYear = Int()
+    hscCertFile = String()
+    bscName = String()
+    bscInstitute = String()
+    bscGpa = Float()
+    bscYear = Int()
+    bscCertFile = String()
+    mscName = String()
+    mscInstitute = String()
+    mscGpa = Float()
+    mscYear = Int()
+    mscCertFile = String()
+    phdName = String()
+    phdInstitute = String()
+    phdGpa = Float()
+    phdYear = Int()
+    phdCertFile = String()
+
+
+class UpdatePreviousEducation(Mutation):
+    class Arguments:
+        data = UpdatePreviousEducationInput()
+    previousEducation = Field(PreviousEducationType)
+    def mutate(root, info, data=None):
+        userInstance = get_object_or_None(User, pk=data.userID)
+        oldPreviousEducation = get_object_or_None(PreviousEducation, pk=data.id, user=userInstance)
+        if oldPreviousEducation and userInstance:
+            if data.sscName in [d[0] for d in PreviousEducation.ssceqChoices]:
+                oldPreviousEducation.ssceq = data.sscName
+            if data.hscName in [d[0] for d in PreviousEducation.hsceqChoices]:
+                oldPreviousEducation.hsceq = data.hscName
+            if data.sscGpa:
+                oldPreviousEducation.sscGpa = data.sscGpa
+            if data.sscYear:
+                oldPreviousEducation.sscYear = data.sscYear
+            if data.sscCertFile:
+                oldPreviousEducation.sscFile = data.sscCertFile
+            if data.hscGpa:
+                oldPreviousEducation.hscGpa = data.hscGpa
+            if data.hscYear:
+                oldPreviousEducation.hscYear = data.hscYear
+            if data.hscCertFile:
+                oldPreviousEducation.hscfile = data.hscCertFile
+            if data.bscName:
+                oldPreviousEducation.bachelor = data.bscName
+            if data.bscInstitute:
+                oldPreviousEducation.bscInstitute = data.bscInstitute
+            if data.bscGpa:
+                oldPreviousEducation.bachelorGpa=data.bscGpa
+            if data.bscYear:
+                oldPreviousEducation.bachelorYear=data.bscYear
+            if data.bscCertFile:
+                oldPreviousEducation.bachelorFile=data.bscCertFile
+            if data.mscName:
+                oldPreviousEducation.master=data.mscName
+            if data.mscInstitute:
+                oldPreviousEducation.mscInstitute=data.mscInstitute
+            if data.mscGpa:
+                oldPreviousEducation.masterGpa=data.mscGpa
+            if data.mscYear:
+                oldPreviousEducation.masterYear=data.mscYear
+            if data.mscCertFile:
+                oldPreviousEducation.masterFile=data.mscCertFile
+            if data.phdName:
+                oldPreviousEducation.phd=data.phdName
+            if data.phdInstitute:
+                oldPreviousEducation.phdInstitute=data.phdInstitute
+            if data.phdGpa:
+                oldPreviousEducation.phdGpa=data.phdGpa
+            if data.phdYear:
+                oldPreviousEducation.phdYear=data.phdYear
+            if data.phdCertFile:
+                oldPreviousEducation.phdFile=data.phdCertFile
+            oldPreviousEducation.save()
+            return UpdatePreviousEducation(previousEducation=oldPreviousEducation)
+
