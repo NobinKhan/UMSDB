@@ -1,6 +1,6 @@
 from graphene import ObjectType
 from .create import CreateNationality, CreateDesignation, CreateGroup, CreateStudent, CreateTeacher, CreateStaff, CreateProfile, CreatePreviousEducation
-from .update import UpdateNationality, UpdateDesignation, UpdateStudent, UpdateProfile, UpdateTeacher, UpdateStaff
+from .update import UpdateNationality, UpdateDesignation, UpdateStudent, UpdateProfile, UpdateTeacher, UpdateStaff, UpdatePreviousEducation
 # import graphql_jwt
 
 
@@ -21,6 +21,7 @@ class Mutation(ObjectType):
   createProfile = CreateProfile.Field()
   updateProfile = UpdateProfile.Field()
   createPreviousEducation = CreatePreviousEducation.Field()
+  updatePreviousEducation = UpdatePreviousEducation.Field()
 
 
 #   token_auth = graphql_jwt.ObtainJSONWebToken.Field()

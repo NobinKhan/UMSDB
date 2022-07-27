@@ -236,7 +236,7 @@ class CreatePreviousEducation(Mutation):
         data = CreatePreviousEducationInput()
     previousEducation = Field(PreviousEducationType)
     def mutate(root, info, data=None):
-        if data.sscName in [d[0] for d in PreviousEducation.ssceqChoices] and data.hsceq in [d[0] for d in PreviousEducation.hsceqChoices]:
+        if data.sscName in [d[0] for d in PreviousEducation.ssceqChoices] and data.hscName in [d[0] for d in PreviousEducation.hsceqChoices]:
             userInstance = get_object_or_None(User, pk=data.userID)
             if userInstance:
                 newPreviousEducation = PreviousEducation(
@@ -244,23 +244,23 @@ class CreatePreviousEducation(Mutation):
                     ssceq = data.sscName,
                     sscGpa = data.sscGpa,
                     sscYear = data.sscYear,
-                    sscFile = data.sscFile,
+                    sscFile = data.sscCertFile,
                     hsceq = data.hscName,
                     hscGpa = data.hscGpa,
                     hscYear = data.hscYear,
-                    hscFile = data.hscFile,
+                    hscfile = data.hscCertFile,
                     bachelor=data.bscName,
-                    bscinstitute=data.bscInstitute,
+                    bscInstitute=data.bscInstitute,
                     bachelorGpa=data.bscGpa,
                     bachelorYear=data.bscYear,
                     bachelorFile=data.bscCertFile,
                     master=data.mscName,
-                    mscinstitute=data.mscInstitute,
+                    mscInstitute=data.mscInstitute,
                     masterGpa=data.mscGpa,
                     masterYear=data.mscYear,
                     masterFile=data.mscCertFile,
                     phd=data.phdName,
-                    phdinstitute=data.phdInstitute,
+                    phdInstitute=data.phdInstitute,
                     phdGpa=data.phdGpa,
                     phdYear=data.phdYear,
                     phdFile=data.phdCertFile,
