@@ -1,14 +1,15 @@
 from graphene import ObjectType, List, Int, String, Float
-from .models import Course, AssignCourse, Period, Shedule, Attendance, CourseResult, SemResult, AttendanceStatus
-from .type import CourseType, AssignCourseType, PeriodType, SheduleType, AttendanceType, CourseResultType, SemResultType, AttendanceStatusType
+from .models import Course, AssignCourse, Period, Shedule, Attendance, CourseResult, SemResult, AttendanceStatus, RetakeCourse
+from .type import CourseType, AssignCourseType, PeriodType, SheduleType, AttendanceType, CourseResultType, SemResultType, AttendanceStatusType, RetakeCourseType
 
 
 
 class Query(ObjectType):
     course = List(CourseType, id=Int())
-    assignCourse = List(AssignCourseType, id=Int())
     period = List(PeriodType, id=Int())
     Shedule = List(SheduleType, id=Int())
+    assignCourse = List(AssignCourseType, id=Int())
+    retakeCourse = List(RetakeCourseType, id=Int())
     attendance = List(AttendanceType, id=Int())
     attendanceStatus = List(AttendanceStatusType, id=Int())
     courseResult = List(CourseResultType, id=Int())
@@ -24,6 +25,11 @@ class Query(ObjectType):
         if id:
             return AssignCourse.objects.filter(pk=id)
         return AssignCourse.objects.all()
+    
+    def resolve_retakeCourse(self, info, id=None):
+        if id:
+            return RetakeCourse.objects.filter(pk=id)
+        return RetakeCourse.objects.all()
     
     def resolve_period(self, info, id=None):
         if id:

@@ -168,7 +168,7 @@ class CourseResult(models.Model):
     
     midMark = models.FloatField(
         verbose_name='Midterm Mark', blank=True, null=True)
-    midAddDate = models.DateTimeField(auto_now=True, blank=True, null=True)
+    midAddDate = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     midLastEditDate = models.DateTimeField(blank=True, null=True)
     midLock = models.BooleanField(default=False)
     
@@ -182,7 +182,7 @@ class CourseResult(models.Model):
         verbose_name='Grade Point', blank=True, null=True)
     grade = models.CharField(
         max_length=12, choices=gradeChoice, default='F')
-    lastEditDate = models.DateTimeField(auto_now_add=True)
+    lastEditDate = models.DateTimeField(auto_now=True)
 
     class Meta:
         constraints = [
