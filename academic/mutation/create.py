@@ -1,9 +1,9 @@
-from graphene import String, Mutation, Field, Int, ID, List, InputObjectType, Time, Date, Float
+from graphene import String, Mutation, Field, Int, ID, List, InputObjectType, Time, Date, Float, Boolean
 from functions.handle_error import get_object_or_None
 from academic.models import Course, AssignCourse, Period, Shedule, Attendance, CourseResult, SemResult, AttendanceStatus
 from layouts.models import Program, Department, Semester, Session
-from academic.type import CourseType, AssignCourseType, PeriodType, SheduleType, AttendanceType, CourseResultType, SemResultType, AttendanceStatusType
-
+from academic.type import CourseType, AssignCourseType, PeriodType, SheduleType, AttendanceType, CourseResultType, SemResultType, AttendanceStatusType, CourseStatusType
+from django.contrib.auth import get_user_model
 
 class CourseInput(InputObjectType):
     courseName = String(required=True)
@@ -72,7 +72,7 @@ class AssignCourseInput(InputObjectType):
     sessionId = ID(required=True)
     courseId = ID(required=True)
     teacherId = ID(required=True)
-    studentIds = List(ID, required=True)
+    # studentIds = List(ID, required=True)
 
 
 class CreateAssignCourse(Mutation):
@@ -85,10 +85,9 @@ class CreateAssignCourse(Mutation):
         semesterObject = get_object_or_None(Semester, pk=data.semesterId)
         sessionObject = get_object_or_None(Session, pk=data.sessionId)
         courseObject = get_object_or_None(Course, pk=data.courseId)
-        teacherObject = get_object_or_None(Teacher, pk=data.teacherId)
-        studentObjects = Student.objects.filter(id__in=data.studentIds)
-        print(sheduleObjects, semesterObject, sessionObject, courseObject, teacherObject, studentObjects)
-        if sheduleObjects and semesterObject and sessionObject and courseObject and teacherObject and studentObjects:
+        teacherObject = get_object_or_None(get_user_model(), isStudent=True, pk=data.teacherId)
+        # studentObjects = Student.objects.filter(id__in=data.studentIds)
+        if sheduleObjects and semesterObject and sessionObject and courseObject and teacherObject:
             newAssignCourse = AssignCourse(
                 semester = semesterObject,
                 session = sessionObject,
@@ -97,9 +96,33 @@ class CreateAssignCourse(Mutation):
             )
             newAssignCourse.save()
             newAssignCourse.shedule.set(sheduleObjects)
-            newAssignCourse.student.set(studentObjects) 
+            # newAssignCourse.student.set(studentObjects) 
             return CreateAssignCourse(assignCourse=newAssignCourse)
         return CreateAssignCourse(assignCourse=None)
+
+
+class CreateCourseStatus(Mutation):
+    class Arguments:
+        assignCourseId = ID(required=True)
+        studentId = ID(required=True)
+        retakeStatus = Boolean(required=True)
+
+    courseStatus = Field(CourseStatusType)
+    def mutate(root, info, assignCourseId, studentId, retakeStatus):
+        assignCourseObject = get_object_or_None(AssignCourse, pk=assignCourseId)
+        studentObject = get_object_or_None(get_user_model(), isStudent=True, pk=studentId)
+        if sheduleObjects and semesterObject and sessionObject and courseObject and teacherObject and studentObjects:
+            newCourseStatus = CourseStatus(
+                semester = semesterObject,
+                session = sessionObject,
+                course = courseObject,
+                teacher = teacherObject,
+            )
+            newCourseStatus.save()
+            newCourseStatus.shedule.set(sheduleObjects)
+            newCourseStatus.student.set(studentObjects) 
+            return CreateCourseStatus(courseStatus=newCourseStatus)
+        return CreateCourseStatus(courseStatus=None)
 
 
 class AttendanceInput(InputObjectType):
