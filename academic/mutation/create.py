@@ -85,7 +85,7 @@ class CreateAssignCourse(Mutation):
         semesterObject = get_object_or_None(Semester, pk=data.semesterId)
         sessionObject = get_object_or_None(Session, pk=data.sessionId)
         courseObject = get_object_or_None(Course, pk=data.courseId)
-        teacherObject = get_object_or_None(get_user_model(), isStudent=True, pk=data.teacherId)
+        teacherObject = get_object_or_None(get_user_model(), isTeacher=True, pk=data.teacherId)
         # studentObjects = Student.objects.filter(id__in=data.studentIds)
         if sheduleObjects and semesterObject and sessionObject and courseObject and teacherObject:
             newAssignCourse = AssignCourse(
@@ -111,16 +111,13 @@ class CreateCourseStatus(Mutation):
     def mutate(root, info, assignCourseId, studentId, retakeStatus):
         assignCourseObject = get_object_or_None(AssignCourse, pk=assignCourseId)
         studentObject = get_object_or_None(get_user_model(), isStudent=True, pk=studentId)
-        if sheduleObjects and semesterObject and sessionObject and courseObject and teacherObject and studentObjects:
+        if assignCourseObject and studentObject:
             newCourseStatus = CourseStatus(
-                semester = semesterObject,
-                session = sessionObject,
-                course = courseObject,
-                teacher = teacherObject,
+                assignCourse = assignCourseObject,
+                student = studentObject,
+                retake = retakeStatus,
             )
             newCourseStatus.save()
-            newCourseStatus.shedule.set(sheduleObjects)
-            newCourseStatus.student.set(studentObjects) 
             return CreateCourseStatus(courseStatus=newCourseStatus)
         return CreateCourseStatus(courseStatus=None)
 
