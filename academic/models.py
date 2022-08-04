@@ -72,7 +72,7 @@ class AssignCourse(models.Model):
     session = models.ForeignKey(Session, on_delete=models.PROTECT)
     course = models.ForeignKey(Course, on_delete=models.PROTECT)
     teacher = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,related_name="Teacher",)
-    student = models.ManyToManyField(settings.AUTH_USER_MODEL, through='RetakeCourse', blank=True)
+    student = models.ManyToManyField(settings.AUTH_USER_MODEL, through='CourseStatus', blank=True)
 
     class Meta:
         constraints = [
@@ -86,7 +86,7 @@ class AssignCourse(models.Model):
         return f"{self.semester} {self.session} {self.course}"
 
 
-class RetakeCourse(models.Model):
+class CourseStatus(models.Model):
     assignCourse = models.ForeignKey(AssignCourse, on_delete=models.PROTECT)
     student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     retake = models.BooleanField(default=False)
@@ -95,7 +95,7 @@ class RetakeCourse(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=['assignCourse', 'student', 'retake'],
-                name="unique_RetakeCourse"
+                name="unique_CourseStatus"
             )
         ]
 
