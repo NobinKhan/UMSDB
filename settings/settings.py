@@ -43,12 +43,9 @@ INSTALLED_APPS = [
     'core.apps.CoreConfig',
     'layouts.apps.LayoutsConfig',
     'academic.apps.AcademicConfig',
-    "debug_toolbar",
-    'graphiql_debug_toolbar',
 ]
 
 MIDDLEWARE = [
-    'graphiql_debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

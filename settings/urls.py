@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path
 from graphene_django.views import GraphQLView
 from django.conf.urls.static import static
 from django.conf import settings
@@ -22,6 +22,5 @@ from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("graphql", GraphQLView.as_view(graphiql=True)),
-    path('__debug__/', include('debug_toolbar.urls')),
+    path("graphql/", GraphQLView.as_view(graphiql=True)),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
