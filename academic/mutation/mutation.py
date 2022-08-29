@@ -1,5 +1,14 @@
 from graphene import ObjectType
-from .create import CreateCourse, CreatePeriod, CreateShedule, CreateAssignCourse, CreateAttendance, CreateAttendanceStatus, CreateCourseResult, CreateCourseStatus
+from .create import (
+  CreateCourse, 
+  CreatePeriod, 
+  CreateShedule, 
+  CreateAssignCourse, 
+  CreateAttendance, 
+  CreateAttendanceStatus, 
+  CreateCourseResult, 
+  CreateCourseStatus
+)
 
 
 
